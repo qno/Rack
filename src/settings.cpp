@@ -34,7 +34,13 @@ float frameRateLimit = 70.0;
 bool frameRateSync = true;
 bool skipLoadOnLaunch = false;
 std::string patchPath;
-std::set<plugin::Model*> favoriteModels;
+std::set<plugin::Model*> favoriteModels = {};
+std::vector<NVGcolor> cableColors = {
+	nvgRGB(0xc9, 0xb7, 0x0e), // yellow
+	nvgRGB(0x0c, 0x8e, 0x15), // green
+	nvgRGB(0xc9, 0x18, 0x47), // red
+	nvgRGB(0x09, 0x86, 0xad), // blue
+};
 
 
 json_t *toJson() {
@@ -90,6 +96,13 @@ json_t *toJson() {
 		json_array_append_new(favoriteModelsJ, modelJ);
 	}
 	json_object_set_new(rootJ, "favoriteModels", favoriteModelsJ);
+
+	json_t *cableColorsJ = json_array();
+	for (NVGcolor cableColor : cableColors) {
+		std::string colorStr = color::toHexString(cableColor);
+		json_array_append_new(cableColorsJ, json_string(colorStr.c_str()));
+	}
+	json_object_set_new(rootJ, "cableColors", cableColorsJ);
 
 	return rootJ;
 }
@@ -177,7 +190,6 @@ void fromJson(json_t *rootJ) {
 	if (patchPathJ)
 		patchPath = json_string_value(patchPathJ);
 
-
 	json_t *favoriteModelsJ = json_object_get(rootJ, "favoriteModels");
 	// Legacy: "favorites" was defined under "moduleBrowser" until 1.0.
 	if (!favoriteModelsJ) {
@@ -186,6 +198,7 @@ void fromJson(json_t *rootJ) {
 			favoriteModelsJ = json_object_get(rootJ, "favorites");
 	}
 	if (favoriteModelsJ) {
+		favoriteModels.clear();
 		size_t i;
 		json_t *favoriteJ;
 		json_array_foreach(favoriteModelsJ, i, favoriteJ) {
@@ -201,39 +214,52 @@ void fromJson(json_t *rootJ) {
 			favoriteModels.insert(model);
 		}
 	}
+
+	json_t *cableColorsJ = json_object_get(rootJ, "cableColors");
+	if (cableColorsJ) {
+		cableColors.clear();
+		size_t i;
+		json_t *cableColorJ;
+		json_array_foreach(cableColorsJ, i, cableColorJ) {
+			std::string colorStr = json_string_value(cableColorJ);
+			cableColors.push_back(color::fromHexString(colorStr));
+		}
+	}
 }
 
 void save(const std::string &path) {
 	INFO("Saving settings %s", path.c_str());
 	json_t *rootJ = toJson();
-	if (rootJ) {
-		FILE *file = std::fopen(path.c_str(), "w");
-		if (!file)
-			return;
+	if (!rootJ)
+		return;
 
-		json_dumpf(rootJ, file, JSON_INDENT(2) | JSON_REAL_PRECISION(9));
-		json_decref(rootJ);
-		std::fclose(file);
-	}
+	FILE *file = fopen(path.c_str(), "w");
+	if (!file)
+		return;
+	DEFER({
+		fclose(file);
+	});
+
+	json_dumpf(rootJ, file, JSON_INDENT(2) | JSON_REAL_PRECISION(9));
+	json_decref(rootJ);
 }
 
 void load(const std::string &path) {
 	INFO("Loading settings %s", path.c_str());
-	FILE *file = std::fopen(path.c_str(), "r");
+	FILE *file = fopen(path.c_str(), "r");
 	if (!file)
-		return;
+		throw UserException(string::f("Could not load settings file %s", path.c_str()));
+	DEFER({
+		fclose(file);
+	});
 
 	json_error_t error;
 	json_t *rootJ = json_loadf(file, 0, &error);
-	if (rootJ) {
-		fromJson(rootJ);
-		json_decref(rootJ);
-	}
-	else {
-		WARN("JSON parsing error at %s %d:%d %s", error.source, error.line, error.column, error.text);
-	}
+	if (!rootJ)
+		throw UserException(string::f("Settings file has invalid JSON at %d:%d %s", error.line, error.column, error.text));
 
-	std::fclose(file);
+	fromJson(rootJ);
+	json_decref(rootJ);
 }
 
 

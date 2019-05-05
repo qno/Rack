@@ -212,7 +212,7 @@ static bool syncPlugin(std::string slug, json_t *manifestJ, bool dryRun) {
 
 	if (dryRun) {
 		// Check if available
-		json_t *availableResJ = network::requestJson(network::METHOD_GET, downloadUrl, NULL);
+		json_t *availableResJ = network::requestJson(network::GET, downloadUrl, NULL);
 		if (!availableResJ) {
 			WARN("Could not check whether download is available");
 			return false;
@@ -390,61 +390,57 @@ void destroy() {
 }
 
 void logIn(const std::string &email, const std::string &password) {
+	loginStatus = "Logging in...";
 	json_t *reqJ = json_object();
 	json_object_set(reqJ, "email", json_string(email.c_str()));
 	json_object_set(reqJ, "password", json_string(password.c_str()));
-	std::string tokenUrl = app::API_URL;
-	tokenUrl += "/token";
-	json_t *resJ = network::requestJson(network::METHOD_POST, tokenUrl, reqJ);
+	std::string url = app::API_URL;
+	url += "/token";
+	json_t *resJ = network::requestJson(network::POST, url, reqJ);
 	json_decref(reqJ);
 
-	if (resJ) {
-		json_t *errorJ = json_object_get(resJ, "error");
-		if (errorJ) {
-			const char *errorStr = json_string_value(errorJ);
-			loginStatus = errorStr;
+	if (!resJ) {
+		loginStatus = "No response from server";
+		return;
+	}
+
+	json_t *errorJ = json_object_get(resJ, "error");
+	if (errorJ) {
+		const char *errorStr = json_string_value(errorJ);
+		loginStatus = errorStr;
+	}
+	else {
+		json_t *tokenJ = json_object_get(resJ, "token");
+		if (tokenJ) {
+			const char *tokenStr = json_string_value(tokenJ);
+			settings::token = tokenStr;
+			loginStatus = "";
 		}
 		else {
-			json_t *tokenJ = json_object_get(resJ, "token");
-			if (tokenJ) {
-				const char *tokenStr = json_string_value(tokenJ);
-				settings::token = tokenStr;
-				loginStatus = "";
-			}
+			loginStatus = "No token in response";
 		}
-		json_decref(resJ);
 	}
+	json_decref(resJ);
 }
 
 void logOut() {
 	settings::token = "";
 }
 
-bool sync(bool dryRun) {
+void query() {
 	if (settings::token.empty())
-		return false;
-
-	bool available = false;
-
-	if (!dryRun) {
-		isDownloading = true;
-		downloadProgress = 0.0;
-		downloadName = "Updating plugins...";
-	}
-	DEFER({
-		isDownloading = false;
-	});
+		return;
 
 	// Get user's plugins list
 	json_t *pluginsReqJ = json_object();
 	json_object_set(pluginsReqJ, "token", json_string(settings::token.c_str()));
 	std::string pluginsUrl = app::API_URL;
 	pluginsUrl += "/plugins";
-	json_t *pluginsResJ = network::requestJson(network::METHOD_GET, pluginsUrl, pluginsReqJ);
+	json_t *pluginsResJ = network::requestJson(network::GET, pluginsUrl, pluginsReqJ);
 	json_decref(pluginsReqJ);
 	if (!pluginsResJ) {
 		WARN("Request for user's plugins failed");
-		return false;
+		return;
 	}
 	DEFER({
 		json_decref(pluginsResJ);
@@ -453,20 +449,36 @@ bool sync(bool dryRun) {
 	json_t *errorJ = json_object_get(pluginsResJ, "error");
 	if (errorJ) {
 		WARN("Request for user's plugins returned an error: %s", json_string_value(errorJ));
-		return false;
+		return;
 	}
 
 	// Get community manifests
 	std::string manifestsUrl = app::API_URL;
 	manifestsUrl += "/community/manifests";
-	json_t *manifestsResJ = network::requestJson(network::METHOD_GET, manifestsUrl, NULL);
+	json_t *manifestsResJ = network::requestJson(network::GET, manifestsUrl, NULL);
 	if (!manifestsResJ) {
 		WARN("Request for community manifests failed");
-		return false;
+		return;
 	}
 	DEFER({
 		json_decref(manifestsResJ);
 	});
+
+	json_dumpf(pluginsResJ, stderr, JSON_INDENT(2));
+	json_dumpf(manifestsResJ, stderr, JSON_INDENT(2));
+}
+
+void sync() {
+#if 0
+	if (settings::token.empty())
+		return false;
+
+	bool available = false;
+
+	if (!dryRun) {
+		downloadProgress = 0.0;
+		downloadName = "Updating plugins...";
+	}
 
 	// Check each plugin in list of plugin slugs
 	json_t *pluginsJ = json_object_get(pluginsResJ, "plugins");
@@ -501,6 +513,7 @@ bool sync(bool dryRun) {
 	}
 
 	return available;
+#endif
 }
 
 void cancelDownload() {
@@ -639,10 +652,10 @@ bool isSlugValid(const std::string &slug) {
 
 
 std::vector<Plugin*> plugins;
-bool isDownloading = false;
+
+std::string loginStatus;
 float downloadProgress = 0.f;
 std::string downloadName;
-std::string loginStatus;
 
 
 } // namespace plugin

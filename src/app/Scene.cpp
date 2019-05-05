@@ -21,9 +21,9 @@ Scene::Scene() {
 
 	rack = rackScroll->rackWidget;
 
-	toolbar = new Toolbar;
-	addChild(toolbar);
-	rackScroll->box.pos.y = toolbar->box.size.y;
+	menuBar = new MenuBar;
+	addChild(menuBar);
+	rackScroll->box.pos.y = menuBar->box.size.y;
 
 	moduleBrowser = moduleBrowserCreate();
 	moduleBrowser->hide();
@@ -35,7 +35,7 @@ Scene::~Scene() {
 
 void Scene::step() {
 	// Resize owned descendants
-	toolbar->box.size.x = box.size.x;
+	menuBar->box.size.x = box.size.x;
 	rackScroll->box.size = box.size.minus(rackScroll->box.pos);
 
 	// Autosave every 15 seconds
@@ -170,7 +170,7 @@ void Scene::onPathDrop(const event::PathDrop &e) {
 void Scene::runCheckVersion() {
 	std::string versionUrl = app::API_URL;
 	versionUrl += "/version";
-	json_t *versionResJ = network::requestJson(network::METHOD_GET, versionUrl, NULL);
+	json_t *versionResJ = network::requestJson(network::GET, versionUrl, NULL);
 
 	if (versionResJ) {
 		json_t *versionJ = json_object_get(versionResJ, "version");
