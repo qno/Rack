@@ -14,8 +14,9 @@ variables:
 
 jobs:
   # Todo - run Linux build in a container with a more recent Ubuntu version, maybe also try CentOS and Arch builds?
+  # teeks99/clang-ubuntu
   - job: LinuxGCC
-    container: teeks99/gcc-ubuntu
+    container: teeks99/gcc-ubuntu:latest
     steps:
       - script: |
           export PATH="$PATH:/home/vsts/.local/bin"
