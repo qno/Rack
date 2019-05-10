@@ -15,15 +15,11 @@ variables:
 jobs:
   # Todo - run Linux build in a container with a more recent Ubuntu version, maybe also try CentOS and Arch builds?
   - job: LinuxGCC
-    pool:
-      vmImage: Ubuntu-16.04
+    container: teeks99/gcc-ubuntu
     steps:
-      - task: UsePythonVersion@0
-        inputs:
-         versionSpec: $(python-version)
       - script: |
           export PATH="$PATH:/home/vsts/.local/bin"
-          sudo apt install -y python3-setuptools
+          sudo apt install -y python3-setuptools ninja-build
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           pip install --user $(cpt-pkg) $(bpt-pkg)
@@ -34,8 +30,8 @@ jobs:
           pushd .
           mkdir build && cd build
           conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release
-          cmake -DCMAKE_BUILD_TYPE=Release ..
-          VERBOSE=1 make -j
+          cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
+          ninja -v
         displayName: build VCVRack
   - job: LinuxClang
     pool:
