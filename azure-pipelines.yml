@@ -12,14 +12,17 @@ variables:
   # available versions: https://github.com/Microsoft/azure-pipelines-image-generation/blob/master/images/macos/macos-10.14-Readme.md
   XCODE_VERSION: 10.2
 
+# https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml
 jobs:
   # Todo - run Linux build in a container with a more recent Ubuntu version, maybe also try CentOS and Arch builds?
   # teeks99/clang-ubuntu
   - job: LinuxGCC
+    pool:
+      vmImage: 'ubuntu-16.04'
     container: teeks99/gcc-ubuntu:latest
     steps:
       - script: |
-          export PATH="$PATH:/home/vsts/.local/bin"
+          export PATH="$HOME/.local/bin"
           sudo apt install -y python3-setuptools ninja-build
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
