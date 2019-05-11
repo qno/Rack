@@ -20,7 +20,7 @@ jobs:
       vmImage: 'ubuntu-16.04'
     # add missing sudo to container - https://github.com/Microsoft/azure-pipelines-agent/issues/2043
     container:
-      image: ubuntu:latest
+      image: ubuntu:disco
       options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
       - script: |
