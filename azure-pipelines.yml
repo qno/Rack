@@ -22,6 +22,7 @@ jobs:
     container: teeks99/gcc-ubuntu:latest
     steps:
       - script: |
+          whoami
           export PATH="$HOME/.local/bin:$PATH"
           apt install -y python3-setuptools ninja-build
           pip install --user --upgrade pip
