@@ -22,7 +22,7 @@ jobs:
     container: teeks99/gcc-ubuntu:latest
     steps:
       - script: |
-          export PATH="$HOME/.local/bin"
+          export PATH="$HOME/.local/bin:$PATH"
           sudo apt install -y python3-setuptools ninja-build
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
@@ -45,7 +45,7 @@ jobs:
         inputs:
          versionSpec: $(python-version)
       - script: |
-          export PATH="$PATH:/home/vsts/.local/bin"
+          export PATH="$HOME/.local/bin:$PATH"
           export CC=clang-6.0
           export CXX=clang++-6.0
           sudo apt install -y python3-setuptools
@@ -71,7 +71,7 @@ jobs:
          versionSpec: $(python-version)
       - script: |
           /bin/bash -c "sudo xcode-select -s /Applications/Xcode_$(XCODE_VERSION).app/Contents/Developer"
-          export PATH=$PATH:$HOME/.local/bin
+          export PATH="$HOME/.local/bin:$PATH"
           pip install --upgrade pip
           brew update || brew update
           brew install autoconf automake libtool pkg-config
