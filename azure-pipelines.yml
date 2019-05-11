@@ -29,10 +29,9 @@ jobs:
         displayName: install sudo in container
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          sudo apt install -y python3-setuptools python3-pip build-essentials cmake gcc g++ clang ninja-build
-          pip install --user --upgrade pip
-          pip install --user $(conan-pkg)
-          pip install --user $(cpt-pkg) $(bpt-pkg)
+          sudo apt install -y python3-setuptools python3-pip build-essential cmake gcc g++ clang ninja-build
+          pip3 install --user $(conan-pkg)
+          pip3 install --user $(cpt-pkg) $(bpt-pkg)
           conan user
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
