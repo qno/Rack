@@ -36,7 +36,7 @@ jobs:
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-        displayName: install/setup dependencies
+        displayName: setup dependencies
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           pushd .
@@ -66,12 +66,12 @@ jobs:
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-        displayName: install/setup dependencies
+        displayName: setup dependencies
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           pushd .
           mkdir build && cd build
-          conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing
+          conan install .. -s build_type=Release --profile ../.ci/conan_profile_linux_clang8.0 --build=missing
           cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
           ninja -v
         displayName: build VCVRack
