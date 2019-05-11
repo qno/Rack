@@ -45,10 +45,9 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
           ninja -v
         displayName: build VCVRack
-  - job: LinuxDockerClang
+  - job: LinuxClang
     pool:
       vmImage: 'ubuntu-16.04'
-    # add missing sudo to container - https://github.com/Microsoft/azure-pipelines-agent/issues/2043
     container:
       image: ubuntu:disco
       options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
@@ -74,31 +73,6 @@ jobs:
           conan install .. -s build_type=Release --profile ../.ci/conan_profile_linux_clang8 --build=missing
           cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
           ninja -v
-        displayName: build VCVRack
-  - job: LinuxClang
-    pool:
-      vmImage: Ubuntu-16.04
-    steps:
-      - task: UsePythonVersion@0
-        inputs:
-         versionSpec: $(python-version)
-      - script: |
-          export PATH="$HOME/.local/bin:$PATH"
-          export CC=clang-6.0
-          export CXX=clang++-6.0
-          sudo apt install -y python3-setuptools
-          pip install --user --upgrade pip
-          pip install --user $(conan-pkg)
-          pip install --user $(cpt-pkg) $(bpt-pkg)
-          conan user
-          conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-          conan remote add qno https://api.bintray.com/conan/qno/conan-public
-          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-          pushd .
-          mkdir build && cd build
-          conan install .. -s build_type=Release --profile ../.ci/conan_profile_linux_clang6.0 --build=missing
-          cmake -DCMAKE_BUILD_TYPE=Release ..
-          VERBOSE=1 make -j
         displayName: build VCVRack
   - job: MacOS1014
     pool:
