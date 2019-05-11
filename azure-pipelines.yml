@@ -36,9 +36,11 @@ jobs:
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+        displayName: install/setup dependencies
+      - script: |
           pushd .
           mkdir build && cd build
-          conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release
+          conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing
           cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
           ninja -v
         displayName: build VCVRack
