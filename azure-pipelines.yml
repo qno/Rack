@@ -30,10 +30,11 @@ jobs:
         displayName: install sudo in container
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
+          sudo apt update && sudo apt upgrade -y
           sudo apt install -y python3-setuptools python3-pip ninja-build
-          pip3 install --upgrade pip
-          pip3 install $(conan-pkg)
-          pip3 install $(cpt-pkg) $(bpt-pkg)
+          pip3 install --user --upgrade pip
+          pip3 install --user $(conan-pkg)
+          pip3 install --user $(cpt-pkg) $(bpt-pkg)
           conan user
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
