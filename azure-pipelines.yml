@@ -19,8 +19,15 @@ jobs:
   - job: LinuxGCC
     pool:
       vmImage: 'ubuntu-16.04'
-    container: teeks99/gcc-ubuntu:latest
+    # https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+    container:
+      image: teeks99/gcc-ubuntu:latest
+      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
+      - script: |
+          /tmp/docker exec -t -u 0 ci-container \
+          sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+        displayName: install sudo in container
       - script: |
           whoami
           export PATH="$HOME/.local/bin:$PATH"
