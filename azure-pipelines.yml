@@ -15,13 +15,12 @@ variables:
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml
 jobs:
   # Todo - run Linux build in a container with a more recent Ubuntu version, maybe also try CentOS and Arch builds?
-  # teeks99/clang-ubuntu
   - job: LinuxGCC
     pool:
       vmImage: 'ubuntu-16.04'
     # add missing sudo to container - https://github.com/Microsoft/azure-pipelines-agent/issues/2043
     container:
-      image: teeks99/gcc-ubuntu:latest
+      image: ubuntu:latest
       options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
     steps:
       - script: |
@@ -30,9 +29,8 @@ jobs:
         displayName: install sudo in container
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          sudo apt install -y python3-setuptools python3-pip ninja-build
-          #pip install --upgrade pip
-          #pip3 install --user --upgrade pip
+          sudo apt install -y python3-setuptools python3-pip build-essentials cmake gcc g++ clang ninja-build
+          pip3 install --user --upgrade pip
           pip3 install --user $(conan-pkg)
           pip3 install --user $(cpt-pkg) $(bpt-pkg)
           conan user
