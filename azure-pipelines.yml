@@ -38,6 +38,7 @@ jobs:
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
         displayName: install/setup dependencies
       - script: |
+          export PATH="$PATH:$HOME/.local/bin"
           pushd .
           mkdir build && cd build
           conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing
