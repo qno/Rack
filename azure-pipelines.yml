@@ -32,7 +32,6 @@ jobs:
           export PATH="$PATH:$HOME/.local/bin"
           sudo apt install -y python3-setuptools python3-pip ninja-build
           pip3 install --upgrade pip
-          pip3 install --upgrade pip
           pip3 install $(conan-pkg)
           pip3 install $(cpt-pkg) $(bpt-pkg)
           conan user
