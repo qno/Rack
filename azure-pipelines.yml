@@ -29,9 +29,8 @@ jobs:
           sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
         displayName: install sudo in container
       - script: |
-          whoami
           export PATH="$HOME/.local/bin:$PATH"
-          apt install -y python3-setuptools ninja-build
+          sudo apt install -y python3-setuptools ninja-build
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           pip install --user $(cpt-pkg) $(bpt-pkg)
