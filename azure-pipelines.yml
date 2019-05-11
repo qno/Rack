@@ -14,7 +14,7 @@ variables:
 
 # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml
 jobs:
-  # Todo - run Linux build in a container with a more recent Ubuntu version, maybe also try CentOS and Arch builds?
+  # maybe also try CentOS and Arch builds?
   - job: LinuxGCC
     pool:
       vmImage: 'ubuntu-16.04'
@@ -30,6 +30,36 @@ jobs:
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           sudo apt install -y python3-setuptools python3-pip build-essential cmake gcc g++ ninja-build git
+          pip3 install --user $(conan-pkg)
+          pip3 install --user $(cpt-pkg) $(bpt-pkg)
+          conan user
+          conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
+          conan remote add qno https://api.bintray.com/conan/qno/conan-public
+          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+        displayName: install/setup dependencies
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          pushd .
+          mkdir build && cd build
+          conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing
+          cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
+          ninja -v
+        displayName: build VCVRack
+  - job: LinuxDockerClang
+    pool:
+      vmImage: 'ubuntu-16.04'
+    # add missing sudo to container - https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+    container:
+      image: ubuntu:disco
+      options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
+    steps:
+      - script: |
+          /tmp/docker exec -t -u 0 ci-container \
+          sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+        displayName: install sudo in container
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          sudo apt install -y python3-setuptools python3-pip build-essential cmake clang ninja-build git
           pip3 install --user $(conan-pkg)
           pip3 install --user $(cpt-pkg) $(bpt-pkg)
           conan user
