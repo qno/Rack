@@ -19,7 +19,7 @@ jobs:
   - job: LinuxGCC
     pool:
       vmImage: 'ubuntu-16.04'
-    # https://github.com/Microsoft/azure-pipelines-agent/issues/2043
+    # add missing sudo to container - https://github.com/Microsoft/azure-pipelines-agent/issues/2043
     container:
       image: teeks99/gcc-ubuntu:latest
       options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
@@ -30,7 +30,7 @@ jobs:
         displayName: install sudo in container
       - script: |
           export PATH="$HOME/.local/bin:$PATH"
-          sudo apt install -y python3-setuptools sudo apt install python3-pip ninja-build
+          sudo apt install -y python3-setuptools python3-pip ninja-build
           pip install --user --upgrade pip
           pip install --user $(conan-pkg)
           pip install --user $(cpt-pkg) $(bpt-pkg)
