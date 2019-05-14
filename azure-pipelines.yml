@@ -123,12 +123,12 @@ jobs:
           # build in CI with gcc 7 and libc++ as conan MinGW doesn't build variants with libstdc++11 for now
           # and no gcc 8 build are available, see also - https://github.com/conan-io/conan-package-tools/issues/375
           conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 -s compiler.version=7 -s compiler.libcxx=libstdc++ --build=missing
-          # because activate_run.bat doesn't work here the ENV is setup directly like the script does
-          SET LD_LIBRARY_PATH=C:\Users\VssAdministrator\.conan\data\mingw_installer\1.0\conan\stable\package\d6e9d8771a7904278203ca1b715b751651fb5664\lib;C:\Users\VssAdministrator\.conan\data\OSDialog\latest\qno\testing\package\6dc82da13f94df549e60f9c1ce4c5d11285a4dff\lib;C:\Users\VssAdministrator\.conan\data\SpeexDSP\1.2rc3\qno\testing\package\556eee825ad14a52f29364abfab0a4ad92873165\lib;C:\Users\VssAdministrator\.conan\data\RtAudio\5.1.0\qno\testing\package\11d7d075fb6600afef9ba14ccee0e260c25f1ab7\lib;C:\Users\VssAdministrator\.conan\data\RtMidi\4.0.0\qno\testing\package\11d7d075fb6600afef9ba14ccee0e260c25f1ab7\lib;C:\Users\VssAdministrator\.conan\data\Pffft\latest\qno\testing\package\6dc82da13f94df549e60f9c1ce4c5d11285a4dff\lib;C:\Users\VssAdministrator\.conan\data\jansson\2.12\bincrafters\stable\package\94c21695bf68b1699dcbed632d9090ad14a4803e\lib;C:\Users\VssAdministrator\.conan\data\libcurl\7.61.1\bincrafters\stable\package\6a89b33b6b13c3afe7b530a8a05618b93be31683\lib;C:\Users\VssAdministrator\.conan\data\libzip\1.5.1\bincrafters\stable\package\f1a3b3f264602f3012a0aa3ec2b881779da88982\lib;C:\Users\VssAdministrator\.conan\data\NanoVG\latest\qno\testing\package\89d652a34c83ae3ae8324ecfddea2f4753d61d2e\lib;C:\Users\VssAdministrator\.conan\data\OpenSSL\1.0.2r\conan\stable\package\f761d91cef7988eafb88c6b6179f4cf261609f26\lib;C:\Users\VssAdministrator\.conan\data\bzip2\1.0.6\conan\stable\package\402bf05ba0cb88a78c59efe7e90ebf2d341edad2\lib;C:\Users\VssAdministrator\.conan\data\glew\2.1.0\bincrafters\stable\package\6dc82da13f94df549e60f9c1ce4c5d11285a4dff\lib;C:\Users\VssAdministrator\.conan\data\glfw\3.3\qno\testing\package\6dc82da13f94df549e60f9c1ce4c5d11285a4dff\lib;C:\Users\VssAdministrator\.conan\data\zlib\1.2.11\conan\stable\package\6dc82da13f94df549e60f9c1ce4c5d11285a4dff\lib;%LD_LIBRARY_PATH%
-          SET PATH=C:\Users\VssAdministrator\.conan\data\mingw_installer\1.0\conan\stable\package\d6e9d8771a7904278203ca1b715b751651fb5664\bin;C:\Users\VssAdministrator\.conan\data\libcurl\7.61.1\bincrafters\stable\package\6a89b33b6b13c3afe7b530a8a05618b93be31683\bin;C:\Users\VssAdministrator\.conan\data\libzip\1.5.1\bincrafters\stable\package\f1a3b3f264602f3012a0aa3ec2b881779da88982\bin;C:\Users\VssAdministrator\.conan\data\bzip2\1.0.6\conan\stable\package\402bf05ba0cb88a78c59efe7e90ebf2d341edad2\bin;%PATH%
-          set
+          set PATH="C:\\Program Files\\CMake\\bin"
+          .\activate_run.bat
+          echo %PATH%
           cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
           cmake --build .
+          echo "Done?"
         displayName: build VCVRack
 #  - job: VisualStudio
 #    pool:
