@@ -123,7 +123,6 @@ jobs:
           # build in CI with gcc 7 and libc++ as conan MinGW doesn't build variants with libstdc++11 for now
           # and no gcc 8 build are available, see also - https://github.com/conan-io/conan-package-tools/issues/375
           conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 -s compiler.version=7 -s compiler.libcxx=libstdc++ --build=missing
-          # clear PATH to get rid of Git bash problem
           set %PATH%
           set PATH=%PATH:C:\Program Files\Git\bin;=%
           set %PATH%
