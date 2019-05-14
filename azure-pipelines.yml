@@ -119,13 +119,10 @@ jobs:
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
           mkdir build
           cd build
-          # conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 --build=missing
-          # build in CI with gcc 7 and libc++ as conan MinGW doesn't build variants with libstdc++11 for now
-          # and no gcc 8 build are available, see also - https://github.com/conan-io/conan-package-tools/issues/375
+          REM conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 --build=missing
+          REM build in CI with gcc 7 and libc++ as conan MinGW doesn't build variants with libstdc++11 for now
+          REM and no gcc 8 build are available, see also - https://github.com/conan-io/conan-package-tools/issues/375
           conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 -s compiler.version=7 -s compiler.libcxx=libstdc++ --build=missing
-          set %PATH%
-          set PATH=%PATH:C:\Program Files\Git\bin;=%
-          set %PATH%
           call "%CD%/activate_run.bat"
           cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release ..
           cmake --build .
