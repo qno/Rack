@@ -5,14 +5,16 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment ver
 
 project(VCVRack CXX)
 
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
 set(CMAKE_CXX_STANDARD 14)
 
-set(RACK_APP rack)
+set(RACK_APP Rack)
 
 set(RACK_GIT_REV "UNKNOWN")
 
 find_package(Git)
-if(GIT_FOUND)
+if (GIT_FOUND)
   execute_process(
     COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
     WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
@@ -20,12 +22,12 @@ if(GIT_FOUND)
     ERROR_QUIET
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-else()
+else ()
   message(WARNING "Git cmd not found")
-endif()
+endif ()
 
 set(RACK_BUILD_VERSION "1.dev.${RACK_GIT_REV}")
-message( STATUS "build ${RACK_APP} version '${RACK_BUILD_VERSION}'")
+message(STATUS "build ${RACK_APP} version '${RACK_BUILD_VERSION}'")
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
@@ -38,16 +40,19 @@ add_executable(${RACK_APP} ${SOURCES})
 
 target_compile_definitions(${RACK_APP} PRIVATE VERSION=${RACK_BUILD_VERSION})
 
-if (MINGW)
-  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  set_target_properties(${RACK_APP} PROPERTIES ENABLE_EXPORTS ON)
   target_compile_definitions(${RACK_APP} PRIVATE _USE_MATH_DEFINES ARCH_WIN)
+endif ()
+
+if (MINGW)
   set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-mwindows")
 endif ()
 
 if (MSVC)
   # https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=vs-2019
   # /O2 /arch:AVX2 --> https://docs.microsoft.com/de-de/cpp/build/reference/arch-x64?view=vs-2019
-  target_compile_definitions(${RACK_APP} PRIVATE _CRT_SECURE_NO_WARNINGS _USE_MATH_DEFINES ARCH_WIN)
+  target_compile_definitions(${RACK_APP} PRIVATE _CRT_SECURE_NO_WARNINGS)
 else ()
   set_target_properties(${RACK_APP} PROPERTIES COMPILE_FLAGS "-march=nocona -funsafe-math-optimizations")
 endif ()
@@ -56,7 +61,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang)")
   if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_compile_definitions(${RACK_APP} PRIVATE ARCH_LIN)
     set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-rdynamic")
-  endif()
+  endif ()
   set_target_properties(${RACK_APP} PROPERTIES COMPILE_FLAGS "-Wall -Wextra -Wno-unused-parameter")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   target_compile_definitions(${RACK_APP} PRIVATE ARCH_MAC)
