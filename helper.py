@@ -117,7 +117,7 @@ Plugin *pluginInstance;
 void init(Plugin *p) {
 	pluginInstance = p;
 
-	// Add modules here, e.g.
+	// Add modules here
 	// p->addModel(modelMyModule);
 
 	// Any other plugin initialization may go here.
@@ -198,7 +198,7 @@ def create_module(slug, panel_filename=None, source_filename=None):
 		module_manifest['slug'] = slug
 		module_manifest['name'] = input_default("Module name", slug)
 		module_manifest['description'] = input_default("One-line description (optional)")
-		tags = input_default("Tags (comma-separated, case-insensitive, see https://github.com/VCVRack/Rack/blob/v1/src/plugin.cpp#L543 for list)")
+		tags = input_default("Tags (comma-separated, case-insensitive, see https://github.com/VCVRack/Rack/blob/v1/src/plugin.cpp#L511-L571 for list)")
 		tags = tags.split(",")
 		tags = [tag.strip() for tag in tags]
 		if len(tags) == 1 and tags[0] == "":
@@ -211,7 +211,7 @@ def create_module(slug, panel_filename=None, source_filename=None):
 		with open(manifest_filename, "w") as f:
 			json.dump(manifest, f, indent="  ")
 
-		print(f"Added {slug} to plugin.json")
+		print(f"Added {slug} to {manifest_filename}")
 
 	# Check filenames
 	if panel_filename and source_filename:
@@ -396,6 +396,7 @@ struct {identifier} : Module {{"""
 };"""
 
 	source += f"""
+
 
 struct {identifier}Widget : ModuleWidget {{
 	{identifier}Widget({identifier} *module) {{

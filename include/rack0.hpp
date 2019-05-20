@@ -44,15 +44,21 @@ DEPRECATED inline float chopf(float x, float eps) {return chop(x, eps);}
 DEPRECATED inline float rescalef(float x, float a, float b, float yMin, float yMax) {return math::rescale(x, a, b, yMin, yMax);}
 DEPRECATED inline float crossf(float a, float b, float frac) {return crossfade(a, b, frac);}
 DEPRECATED inline float interpf(const float *p, float x) {return interpolateLinear(p, x);}
-DEPRECATED inline void cmultf(float *cr, float *ci, float ar, float ai, float br, float bi) {return complexMult(cr, ci, ar, ai, br, bi);}
 DEPRECATED inline void complexMult(float *cr, float *ci, float ar, float ai, float br, float bi) {complexMult(ar, ai, br, bi, cr, ci);}
+DEPRECATED inline void cmultf(float *cr, float *ci, float ar, float ai, float br, float bi) {return complexMult(ar, ai, br, bi, cr, ci);}
+
+////////////////////
+// string
+////////////////////
+
+#define stringf string::f
 
 ////////////////////
 // random
 ////////////////////
 
-DEPRECATED inline float randomu32() {return random::u32();}
-DEPRECATED inline float randomu64() {return random::u64();}
+DEPRECATED inline uint32_t randomu32() {return random::u32();}
+DEPRECATED inline uint64_t randomu64() {return random::u64();}
 DEPRECATED inline float randomUniform() {return random::uniform();}
 DEPRECATED inline float randomNormal() {return random::normal();}
 DEPRECATED inline float randomf() {return random::uniform();}
@@ -120,6 +126,15 @@ DEPRECATED TScrew *createScrew(math::Vec pos) {
 template <class TParamWidget>
 DEPRECATED TParamWidget *createParam(math::Vec pos, Module *module, int paramId, float minValue, float maxValue, float defaultValue) {
 	TParamWidget *o = createParam<TParamWidget>(pos, module, paramId);
+	if (module) {
+		module->configParam(paramId, minValue, maxValue, defaultValue);
+	}
+	return o;
+}
+
+template <class TParamWidget>
+DEPRECATED TParamWidget *createParamCentered(math::Vec pos, Module *module, int paramId, float minValue, float maxValue, float defaultValue) {
+	TParamWidget *o = createParamCentered<TParamWidget>(pos, module, paramId);
 	if (module) {
 		module->configParam(paramId, minValue, maxValue, defaultValue);
 	}
