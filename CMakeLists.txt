@@ -5,8 +5,6 @@ set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment ver
 
 project(VCVRack CXX)
 
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
 set(CMAKE_CXX_STANDARD 14)
 
 set(RACK_APP Rack)
@@ -41,12 +39,14 @@ add_executable(${RACK_APP} ${SOURCES})
 target_compile_definitions(${RACK_APP} PRIVATE VERSION=${RACK_BUILD_VERSION})
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  # http://cmake.3232098.n2.nabble.com/Link-against-exe-on-Windows-fails-a-file-not-found-td7597550.html
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   set_target_properties(${RACK_APP} PROPERTIES ENABLE_EXPORTS ON)
   target_compile_definitions(${RACK_APP} PRIVATE _USE_MATH_DEFINES ARCH_WIN)
 endif ()
 
 if (MINGW)
-  set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-mwindows")
+  set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols -mwindows")
 endif ()
 
 if (MSVC)
