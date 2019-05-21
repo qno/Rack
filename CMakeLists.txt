@@ -30,8 +30,9 @@ message(STATUS "build ${RACK_APP} version '${RACK_BUILD_VERSION}'")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-file(GLOB_RECURSE SOURCES src/*.cpp)
-file(GLOB_RECURSE HEADERS include/*.hpp)
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.c)
+file(GLOB_RECURSE HEADERS include/*.hpp include/*.h)
+
 source_group("Header Files" FILES ${HEADERS})
 
 add_executable(${RACK_APP} ${SOURCES})
