@@ -1,6 +1,6 @@
 #pragma once
-#include "math.hpp"
-#include "simd/functions.hpp"
+#include <math.hpp>
+#include <simd/functions.hpp>
 
 
 namespace rack {
@@ -15,6 +15,7 @@ namespace dsp {
 
 static const float FREQ_C4 = 261.6256f;
 static const float FREQ_A4 = 440.0000f;
+static const float FREQ_SEMITONE = 1.0594630943592953f;
 
 // Mathematical functions
 

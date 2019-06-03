@@ -1,14 +1,14 @@
-#include "window.hpp"
-#include "asset.hpp"
-#include "app/Scene.hpp"
-#include "keyboard.hpp"
-#include "gamepad.hpp"
-#include "event.hpp"
-#include "app.hpp"
-#include "patch.hpp"
-#include "settings.hpp"
-#include "plugin.hpp" // used in Window::screenshot
-#include "system.hpp" // used in Window::screenshot
+#include <window.hpp>
+#include <asset.hpp>
+#include <app/Scene.hpp>
+#include <keyboard.hpp>
+#include <gamepad.hpp>
+#include <event.hpp>
+#include <app.hpp>
+#include <patch.hpp>
+#include <settings.hpp>
+#include <plugin.hpp> // used in Window::screenshot
+#include <system.hpp> // used in Window::screenshot
 
 #include <map>
 #include <queue>
@@ -27,6 +27,7 @@ namespace rack {
 
 
 void Font::loadFile(const std::string &filename, NVGcontext *vg) {
+	this->vg = vg;
 	handle = nvgCreateFont(vg, filename.c_str(), filename.c_str());
 	if (handle >= 0) {
 		INFO("Loaded font %s", filename.c_str());
@@ -45,6 +46,7 @@ std::shared_ptr<Font> Font::load(const std::string &filename) {
 }
 
 void Image::loadFile(const std::string &filename, NVGcontext *vg) {
+	this->vg = vg;
 	handle = nvgCreateImage(vg, filename.c_str(), NVG_IMAGE_REPEATX | NVG_IMAGE_REPEATY);
 	if (handle > 0) {
 		INFO("Loaded image %s", filename.c_str());
@@ -162,13 +164,11 @@ static void keyCallback(GLFWwindow *win, int key, int scancode, int action, int 
 		return;
 
 	// Keyboard MIDI driver
-	if ((mods & RACK_MOD_MASK) == 0) {
-		if (action == GLFW_PRESS) {
-			keyboard::press(key);
-		}
-		else if (action == GLFW_RELEASE) {
-			keyboard::release(key);
-		}
+	if ((mods & RACK_MOD_MASK) == 0 && action == GLFW_PRESS) {
+		keyboard::press(key);
+	}
+	if (action == GLFW_RELEASE) {
+		keyboard::release(key);
 	}
 }
 
@@ -327,10 +327,7 @@ void Window::run() {
 		gamepad::step();
 
 		// Set window title
-		std::string windowTitle;
-		windowTitle = app::APP_NAME;
-		windowTitle += " v";
-		windowTitle += app::APP_VERSION;
+		std::string windowTitle = app::APP_NAME + " v" + app::APP_VERSION;
 		if (!APP->patch->path.empty()) {
 			windowTitle += " - ";
 			if (!APP->history->isSaved())

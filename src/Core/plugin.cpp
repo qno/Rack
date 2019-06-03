@@ -4,21 +4,22 @@
 void init(rack::Plugin *p) {
 	p->slug = "Core";
 	p->version = TOSTRING(VERSION);
-	p->name = "Core";
-	p->author = "VCV";
 	p->license = "BSD-3-Clause";
+	p->name = "Core";
+	p->brand = "Core";
+	p->author = "VCV";
 	p->authorEmail = "contact@vcvrack.com";
-	p->pluginUrl = "https://vcvrack.com/";
 	p->authorUrl = "https://vcvrack.com/";
+	p->pluginUrl = "https://vcvrack.com/";
 	p->manualUrl = "https://vcvrack.com/manual/Core.html";
 	p->sourceUrl = "https://github.com/VCVRack/Rack";
 
-	modelAudioInterface->name = "Audio 8";
+	modelAudioInterface->name = "Audio-8";
 	modelAudioInterface->description = "Sends audio and CV to/from an audio device";
 	modelAudioInterface->tags = {"External"};
 	p->addModel(modelAudioInterface);
 
-	modelAudioInterface16->name = "Audio 16";
+	modelAudioInterface16->name = "Audio-16";
 	modelAudioInterface16->description = "Sends audio and CV to/from an audio device";
 	modelAudioInterface16->tags = {"External"};
 	p->addModel(modelAudioInterface16);
