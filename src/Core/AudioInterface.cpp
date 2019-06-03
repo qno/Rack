@@ -1,14 +1,11 @@
 #include "plugin.hpp"
-#include "audio.hpp"
-#include "app.hpp"
+#include <audio.hpp>
+#include <app.hpp>
 #include <mutex>
 #include <chrono>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-
-
-using namespace rack;
 
 
 template <int AUDIO_OUTPUTS, int AUDIO_INPUTS>
@@ -117,6 +114,7 @@ struct AudioInterface : Module {
 
 	AudioInterface() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
+		port.maxChannels = std::max(AUDIO_OUTPUTS, AUDIO_INPUTS);
 		onSampleRateChange();
 	}
 
@@ -173,7 +171,7 @@ struct AudioInterface : Module {
 			if (!outputBuffer.full()) {
 				dsp::Frame<AUDIO_OUTPUTS> outputFrame;
 				for (int i = 0; i < AUDIO_OUTPUTS; i++) {
-					outputFrame.samples[i] = inputs[AUDIO_INPUT + i].getVoltage() / 10.f;
+					outputFrame.samples[i] = inputs[AUDIO_INPUT + i].getVoltageSum() / 10.f;
 				}
 				outputBuffer.push(outputFrame);
 			}

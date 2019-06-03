@@ -1,12 +1,12 @@
-#include "app/ParamWidget.hpp"
-#include "ui/MenuOverlay.hpp"
-#include "ui/TextField.hpp"
-#include "app/Scene.hpp"
-#include "app.hpp"
-#include "engine/Engine.hpp"
-#include "settings.hpp"
-#include "history.hpp"
-#include "helpers.hpp"
+#include <app/ParamWidget.hpp>
+#include <ui/MenuOverlay.hpp>
+#include <ui/TextField.hpp>
+#include <app/Scene.hpp>
+#include <app.hpp>
+#include <engine/Engine.hpp>
+#include <settings.hpp>
+#include <history.hpp>
+#include <helpers.hpp>
 
 
 namespace rack {
@@ -100,7 +100,7 @@ struct ParamFineItem : ui::MenuItem {
 struct ParamUnmapItem : ui::MenuItem {
 	ParamWidget *paramWidget;
 	void onAction(const event::Action &e) override {
-		engine::ParamHandle *paramHandle = APP->engine->getParamHandle(paramWidget->paramQuantity->module, paramWidget->paramQuantity->paramId);
+		engine::ParamHandle *paramHandle = APP->engine->getParamHandle(paramWidget->paramQuantity->module->id, paramWidget->paramQuantity->paramId);
 		if (paramHandle) {
 			APP->engine->updateParamHandle(paramHandle, -1, 0);
 		}
@@ -126,11 +126,13 @@ void ParamWidget::draw(const DrawArgs &args) {
 	Widget::draw(args);
 
 	// Param map indicator
-	engine::ParamHandle *paramHandle = paramQuantity ? APP->engine->getParamHandle(paramQuantity->module, paramQuantity->paramId) : NULL;
+	engine::ParamHandle *paramHandle = paramQuantity ? APP->engine->getParamHandle(paramQuantity->module->id, paramQuantity->paramId) : NULL;
 	if (paramHandle) {
-			NVGcolor color = nvgRGB(0xff, 0x40, 0xff);
+			NVGcolor color = paramHandle->color;
 			nvgBeginPath(args.vg);
-			nvgCircle(args.vg, box.size.x - 3, box.size.y - 3, 3.0);
+			const float radius = 6;
+			// nvgCircle(args.vg, box.size.x / 2, box.size.y / 2, radius);
+			nvgRect(args.vg, box.size.x - radius, box.size.y - radius, radius, radius);
 			nvgFillColor(args.vg, color);
 			nvgFill(args.vg);
 			nvgStrokeColor(args.vg, color::mult(color, 0.5));
@@ -210,10 +212,11 @@ void ParamWidget::createContextMenu() {
 	// fineItem->disabled = true;
 	// menu->addChild(fineItem);
 
-	engine::ParamHandle *paramHandle = paramQuantity ? APP->engine->getParamHandle(paramQuantity->module, paramQuantity->paramId) : NULL;
+	engine::ParamHandle *paramHandle = paramQuantity ? APP->engine->getParamHandle(paramQuantity->module->id, paramQuantity->paramId) : NULL;
 	if (paramHandle) {
 		ParamUnmapItem *unmapItem = new ParamUnmapItem;
 		unmapItem->text = "Unmap";
+		unmapItem->rightText = paramHandle->text;
 		unmapItem->paramWidget = this;
 		menu->addChild(unmapItem);
 	}

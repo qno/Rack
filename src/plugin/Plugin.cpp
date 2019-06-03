@@ -1,5 +1,6 @@
-#include "plugin/Plugin.hpp"
-#include "plugin/Model.hpp"
+#include <plugin/Plugin.hpp>
+#include <plugin/Model.hpp>
+#include <plugin.hpp>
 
 
 namespace rack {
@@ -13,12 +14,19 @@ Plugin::~Plugin() {
 }
 
 void Plugin::addModel(Model *model) {
+	// Check that the model is not added to a plugin already
 	assert(!model->plugin);
+	// Check model slug
+	if (!isSlugValid(model->slug)) {
+		WARN("Module slug \"%s\" is invalid", model->slug.c_str());
+		return;
+	}
 	model->plugin = this;
 	models.push_back(model);
 }
 
 Model *Plugin::getModel(std::string slug) {
+	slug = normalizeSlug(slug);
 	for (Model *model : models) {
 		if (model->slug == slug) {
 			return model;
@@ -39,6 +47,13 @@ void Plugin::fromJson(json_t *rootJ) {
 	json_t *nameJ = json_object_get(rootJ, "name");
 	if (nameJ)
 		name = json_string_value(nameJ);
+
+	json_t *brandJ = json_object_get(rootJ, "brand");
+	if (brandJ)
+		brand = json_string_value(brandJ);
+	// Use name for brand name by default
+	if (brand == "")
+		brand = name;
 
 	json_t *authorJ = json_object_get(rootJ, "author");
 	if (authorJ)

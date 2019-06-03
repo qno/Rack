@@ -1,23 +1,23 @@
 #pragma once
-#include "plugin/Model.hpp"
-#include "ui/MenuOverlay.hpp"
-#include "ui/MenuItem.hpp"
-#include "ui/MenuLabel.hpp"
-#include "ui/Menu.hpp"
-#include "app/PortWidget.hpp"
-#include "app/ParamWidget.hpp"
-#include "app/Scene.hpp"
-#include "engine/Module.hpp"
-#include "engine/ParamQuantity.hpp"
-#include "app.hpp"
-#include "window.hpp"
+#include <plugin/Model.hpp>
+#include <ui/MenuOverlay.hpp>
+#include <ui/MenuItem.hpp>
+#include <ui/MenuLabel.hpp>
+#include <ui/Menu.hpp>
+#include <app/PortWidget.hpp>
+#include <app/ParamWidget.hpp>
+#include <app/Scene.hpp>
+#include <engine/Module.hpp>
+#include <engine/ParamQuantity.hpp>
+#include <app.hpp>
+#include <window.hpp>
 
 
 namespace rack {
 
 
 template <class TModule, class TModuleWidget, typename... Tags>
-plugin::Model *createModel(std::string slug) {
+plugin::Model *createModel(const std::string &slug) {
 	struct TModel : plugin::Model {
 		engine::Module *createModule() override {
 			TModule *m = new TModule;

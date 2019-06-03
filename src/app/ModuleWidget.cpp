@@ -1,16 +1,16 @@
-#include "app/ModuleWidget.hpp"
-#include "app/Scene.hpp"
-#include "engine/Engine.hpp"
-#include "plugin/Plugin.hpp"
-#include "app/SvgPanel.hpp"
-#include "system.hpp"
-#include "asset.hpp"
-#include "helpers.hpp"
-#include "app.hpp"
-#include "settings.hpp"
-#include "history.hpp"
+#include <app/ModuleWidget.hpp>
+#include <app/Scene.hpp>
+#include <engine/Engine.hpp>
+#include <plugin/Plugin.hpp>
+#include <app/SvgPanel.hpp>
+#include <system.hpp>
+#include <asset.hpp>
+#include <helpers.hpp>
+#include <app.hpp>
+#include <settings.hpp>
+#include <history.hpp>
 
-#include "osdialog.h"
+#include <osdialog.h>
 #include <thread>
 
 
@@ -262,13 +262,15 @@ void ModuleWidget::draw(const DrawArgs &args) {
 	if (module && settings::cpuMeter) {
 		nvgBeginPath(args.vg);
 		nvgRect(args.vg,
-			0, box.size.y - 20,
-			105, 20);
+			0, box.size.y - 35,
+			65, 35);
 		nvgFillColor(args.vg, nvgRGBAf(0, 0, 0, 0.75));
 		nvgFill(args.vg);
 
-		std::string cpuText = string::f("%.2f μs %.1f%%", module->cpuTime * 1e6f, module->cpuTime * APP->engine->getSampleRate() * 100);
-		bndLabel(args.vg, 2.0, box.size.y - 20.0, INFINITY, INFINITY, -1, cpuText.c_str());
+		float percent = module->cpuTime * APP->engine->getSampleRate() * 100;
+		float microseconds = module->cpuTime * 1e6f;
+		std::string cpuText = string::f("%.1f%%\n%.2f μs", percent, microseconds);
+		bndLabel(args.vg, 2.0, box.size.y - 34.0, INFINITY, INFINITY, -1, cpuText.c_str());
 
 		float p = math::clamp(module->cpuTime / APP->engine->getSampleTime(), 0.f, 1.f);
 		nvgBeginPath(args.vg);
@@ -812,7 +814,7 @@ void ModuleWidget::createContextMenu() {
 	assert(model);
 
 	ui::MenuLabel *modelLabel = new ui::MenuLabel;
-	modelLabel->text = model->name;
+	modelLabel->text = model->plugin->brand + " " + model->name;
 	menu->addChild(modelLabel);
 
 	ModulePluginItem *pluginItem = new ModulePluginItem;
