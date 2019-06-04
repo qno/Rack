@@ -1,5 +1,5 @@
 [requires]
-OUIBlendish/latest@qno/testing
+OUIBlendishVCVRack/latest@qno/testing
 OSDialog/latest@qno/testing
 NanoSVG/latest@qno/testing
 stb/20190512@conan/stable
