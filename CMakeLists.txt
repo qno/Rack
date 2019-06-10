@@ -35,6 +35,10 @@ file(GLOB_RECURSE HEADERS include/*.hpp include/*.h)
 
 source_group("Header Files" FILES ${HEADERS})
 
+if (MINGW)
+  set(SOURCES "${SOURCES}" Rack.rc)
+endif ()
+
 add_executable(${RACK_APP} ${SOURCES})
 
 target_compile_definitions(${RACK_APP} PRIVATE VERSION=${RACK_BUILD_VERSION})
