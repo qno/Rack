@@ -261,27 +261,28 @@ void init() {
 	loadPlugin("");
 
 	// Get user plugins directory
-	std::string pluginsDir = asset::user("plugins");
-	mkdir(pluginsDir.c_str(), 0755);
+	mkdir(asset::pluginsPath.c_str(), 0755);
 
 	// Extract packages and load plugins
-	extractPackages(pluginsDir);
-	loadPlugins(pluginsDir);
+	extractPackages(asset::pluginsPath);
+	loadPlugins(asset::pluginsPath);
 
 	// If Fundamental wasn't loaded, copy the bundled Fundamental package and load it
 	std::string fundamentalSrc = asset::system("Fundamental.zip");
-	std::string fundamentalDir = asset::user("plugins/Fundamental");
+	std::string fundamentalDir = asset::pluginsPath + "/Fundamental";
 	if (!settings::devMode && !getPlugin("Fundamental") && system::isFile(fundamentalSrc)) {
 		INFO("Extracting bundled Fundamental package");
-		extractZip(fundamentalSrc.c_str(), pluginsDir.c_str());
+		extractZip(fundamentalSrc.c_str(), asset::pluginsPath.c_str());
 		loadPlugin(fundamentalDir);
 	}
 
 	// Sync in a detached thread
-	std::thread t([] {
-		queryUpdates();
-	});
-	t.detach();
+	if (!settings::devMode) {
+		std::thread t([] {
+			queryUpdates();
+		});
+		t.detach();
+	}
 }
 
 void destroy() {
@@ -315,34 +316,44 @@ void logIn(const std::string &email, const std::string &password) {
 		loginStatus = "No response from server";
 		return;
 	}
+	DEFER({
+		json_decref(resJ);
+	});
 
 	json_t *errorJ = json_object_get(resJ, "error");
 	if (errorJ) {
 		const char *errorStr = json_string_value(errorJ);
 		loginStatus = errorStr;
+		return;
 	}
-	else {
-		json_t *tokenJ = json_object_get(resJ, "token");
-		if (tokenJ) {
-			const char *tokenStr = json_string_value(tokenJ);
-			settings::token = tokenStr;
-			loginStatus = "";
-		}
-		else {
-			loginStatus = "No token in response";
-		}
+
+	json_t *tokenJ = json_object_get(resJ, "token");
+	if (!tokenJ) {
+		loginStatus = "No token in response";
+		return;
 	}
-	json_decref(resJ);
+
+	const char *tokenStr = json_string_value(tokenJ);
+	settings::token = tokenStr;
+	loginStatus = "";
+	queryUpdates();
 }
 
 void logOut() {
 	settings::token = "";
+	updates.clear();
+}
+
+bool isLoggedIn() {
+	return settings::token != "";
 }
 
 void queryUpdates() {
 	if (settings::token.empty())
 		return;
+
 	updates.clear();
+	updateStatus = "Querying for updates...";
 
 	// Get user's plugins list
 	std::string pluginsUrl = app::API_URL + "/plugins";
@@ -352,6 +363,7 @@ void queryUpdates() {
 	json_decref(pluginsReqJ);
 	if (!pluginsResJ) {
 		WARN("Request for user's plugins failed");
+		updateStatus = "Could not query updates";
 		return;
 	}
 	DEFER({
@@ -361,6 +373,7 @@ void queryUpdates() {
 	json_t *errorJ = json_object_get(pluginsResJ, "error");
 	if (errorJ) {
 		WARN("Request for user's plugins returned an error: %s", json_string_value(errorJ));
+		updateStatus = "Could not query updates";
 		return;
 	}
 
@@ -372,6 +385,7 @@ void queryUpdates() {
 	json_decref(manifestsReq);
 	if (!manifestsResJ) {
 		WARN("Request for library manifests failed");
+		updateStatus = "Could not query updates";
 		return;
 	}
 	DEFER({
@@ -393,8 +407,12 @@ void queryUpdates() {
 			continue;
 		}
 
+		// Get plugin name
+		json_t *nameJ = json_object_get(manifestJ, "name");
+		if (nameJ)
+			update.pluginName = json_string_value(nameJ);
+
 		// Get version
-		// TODO Change this to "version" when API changes
 		json_t *versionJ = json_object_get(manifestJ, "version");
 		if (!versionJ) {
 			WARN("Plugin %s has no version in manifest", update.pluginSlug.c_str());
@@ -423,9 +441,27 @@ void queryUpdates() {
 
 		updates.push_back(update);
 	}
+
+	updateStatus = "";
 }
 
+bool hasUpdates() {
+	for (Update &update : updates) {
+		if (update.progress < 1.f)
+			return true;
+	}
+	return false;
+}
+
+static bool isSyncingUpdate = false;
+static bool isSyncingUpdates = false;
+
 void syncUpdate(Update *update) {
+	isSyncingUpdate = true;
+	DEFER({
+		isSyncingUpdate = false;
+	});
+
 #if defined ARCH_WIN
 	std::string arch = "win";
 #elif ARCH_MAC
@@ -443,7 +479,7 @@ void syncUpdate(Update *update) {
 	INFO("Downloading plugin %s %s %s", update->pluginSlug.c_str(), update->version.c_str(), arch.c_str());
 
 	// Download zip
-	std::string pluginDest = asset::user("plugins/" + update->pluginSlug + ".zip");
+	std::string pluginDest = asset::pluginsPath + "/" + update->pluginSlug + ".zip";
 	if (!network::requestDownload(downloadUrl, pluginDest, &update->progress)) {
 		WARN("Plugin %s download was unsuccessful", update->pluginSlug.c_str());
 		return;
@@ -451,20 +487,23 @@ void syncUpdate(Update *update) {
 }
 
 void syncUpdates() {
+	isSyncingUpdates = true;
+	DEFER({
+		isSyncingUpdates = false;
+	});
+
 	if (settings::token.empty())
 		return;
 
 	for (Update &update : updates) {
-		syncUpdate(&update);
+		if (update.progress < 1.f)
+			syncUpdate(&update);
 	}
+	restartRequested = true;
 }
 
-void cancelDownload() {
-	// TODO
-}
-
-bool isLoggedIn() {
-	return settings::token != "";
+bool isSyncing() {
+	return isSyncingUpdate || isSyncingUpdates;
 }
 
 Plugin *getPlugin(const std::string &pluginSlug) {
@@ -609,6 +648,8 @@ std::vector<Plugin*> plugins;
 
 std::string loginStatus;
 std::vector<Update> updates;
+std::string updateStatus;
+bool restartRequested = false;
 
 
 } // namespace plugin

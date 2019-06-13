@@ -15,6 +15,7 @@
 #include <system.hpp>
 #include <plugin.hpp>
 #include <patch.hpp>
+#include <osdialog.h>
 #include <thread>
 
 
@@ -278,6 +279,12 @@ struct LockModulesItem : ui::MenuItem {
 	}
 };
 
+struct CursorLockItem : ui::MenuItem {
+	void onAction(const event::Action &e) override {
+		settings::allowCursorLock ^= true;
+	}
+};
+
 struct FullscreenItem : ui::MenuItem {
 	void onAction(const event::Action &e) override {
 		APP->window->setFullScreen(!APP->window->isFullScreen());
@@ -299,6 +306,11 @@ struct ViewButton : MenuButton {
 		lockModulesItem->text = "Lock modules";
 		lockModulesItem->rightText = CHECKMARK(settings::lockModules);
 		menu->addChild(lockModulesItem);
+
+		CursorLockItem *cursorLockItem = new CursorLockItem;
+		cursorLockItem->text = "Hide cursor while dragging";
+		cursorLockItem->rightText = CHECKMARK(settings::allowCursorLock);
+		menu->addChild(cursorLockItem);
 
 		ZoomSlider *zoomSlider = new ZoomSlider;
 		zoomSlider->box.size.x = 200.0;
@@ -495,6 +507,24 @@ struct LogInItem : ui::MenuItem {
 };
 
 struct SyncItem : ui::MenuItem {
+	void step() override {
+		disabled = true;
+		if (plugin::updateStatus != "") {
+			text = plugin::updateStatus;
+		}
+		else if (plugin::isSyncing()) {
+			text = "Updating...";
+		}
+		else if (!plugin::hasUpdates()) {
+			text = "Up-to-date";
+		}
+		else {
+			text = "Update all";
+			disabled = false;
+		}
+		MenuItem::step();
+	}
+
 	void onAction(const event::Action &e) override {
 		std::thread t([=]() {
 			plugin::syncUpdates();
@@ -509,7 +539,7 @@ struct PluginSyncItem : ui::MenuItem {
 
 	void setUpdate(plugin::Update *update) {
 		this->update = update;
-		text = update->pluginSlug;
+		text = update->pluginName;
 		plugin::Plugin *p = plugin::getPlugin(update->pluginSlug);
 		if (p) {
 			rightText += "v" + p->version + " → ";
@@ -532,8 +562,10 @@ struct PluginSyncItem : ui::MenuItem {
 	}
 
 	void step() override {
+		disabled = plugin::isSyncing();
 		if (update->progress >= 1) {
 			rightText = CHECKMARK_STRING;
+			disabled = true;
 		}
 		else if (update->progress > 0) {
 			rightText = string::f("%.0f%%", update->progress * 100.f);
@@ -550,67 +582,34 @@ struct PluginSyncItem : ui::MenuItem {
 	}
 };
 
-
-#if 0
-struct SyncButton : ui::Button {
-	bool checked = false;
-	/** Updates are available */
-	bool available = false;
-	/** Plugins have been updated */
-	bool completed = false;
-
-	void step() override {
-		// Check for plugin update on first step()
-		if (!checked) {
-			std::thread t([this]() {
-				if (plugin::sync(true))
-					available = true;
-			});
-			t.detach();
-			checked = true;
-		}
-		// Display message if we've completed updates
-		if (completed) {
-			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, "All plugins have been updated. Close Rack and re-launch it to load new updates.")) {
-				APP->window->close();
-			}
-			completed = false;
-		}
-	}
-	void onAction(const event::Action &e) override {
-		available = false;
-		std::thread t([this]() {
-			if (plugin::sync(false))
-				completed = true;
-		});
-		t.detach();
-	}
-};
-#endif
-
 struct LogOutItem : ui::MenuItem {
 	void onAction(const event::Action &e) override {
 		plugin::logOut();
 	}
 };
 
-struct PluginsMenu : ui::Menu {
+struct LibraryMenu : ui::Menu {
 	bool loggedIn = false;
 
-	PluginsMenu() {
+	LibraryMenu() {
 		refresh();
 	}
 
 	void step() override {
+		// Refresh menu when appropriate
 		if (!loggedIn && plugin::isLoggedIn())
 			refresh();
 		Menu::step();
 	}
 
 	void refresh() {
+		setChildMenu(NULL);
 		clearChildren();
 
-		if (!plugin::isLoggedIn()) {
+		if (settings::devMode) {
+			addChild(createMenuLabel("Disabled in development mode"));
+		}
+		else if (!plugin::isLoggedIn()) {
 			UrlItem *registerItem = new UrlItem;
 			registerItem->text = "Register VCV account";
 			registerItem->url = "https://vcvrack.com/";
@@ -637,7 +636,7 @@ struct PluginsMenu : ui::Menu {
 			loggedIn = true;
 
 			UrlItem *manageItem = new UrlItem;
-			manageItem->text = "VCV Plugin Manager";
+			manageItem->text = "Manage plugins";
 			manageItem->url = "https://vcvrack.com/plugins.html";
 			addChild(manageItem);
 
@@ -647,10 +646,9 @@ struct PluginsMenu : ui::Menu {
 
 			SyncItem *syncItem = new SyncItem;
 			syncItem->text = "Update all";
-			syncItem->disabled = plugin::updates.empty();
 			addChild(syncItem);
 
-			if (!plugin::updates.empty()) {
+			if (plugin::hasUpdates()) {
 				addChild(new ui::MenuEntry);
 
 				ui::MenuLabel *updatesLabel = new ui::MenuLabel;
@@ -668,23 +666,32 @@ struct PluginsMenu : ui::Menu {
 };
 
 
-struct PluginsButton : MenuButton {
+struct LibraryButton : MenuButton {
 	NotificationIcon *notification;
 
-	PluginsButton() {
+	LibraryButton() {
 		notification = new NotificationIcon;
 		addChild(notification);
 	}
 
 	void onAction(const event::Action &e) override {
-		ui::Menu *menu = createMenu<PluginsMenu>();
+		ui::Menu *menu = createMenu<LibraryMenu>();
 		menu->box.pos = getAbsoluteOffset(math::Vec(0, box.size.y));
 		menu->box.size.x = box.size.x;
 	}
 
 	void step() override {
 		notification->box.pos = math::Vec(0, 0);
-		notification->visible = false;
+		notification->visible = plugin::hasUpdates();
+
+		// Popup when updates finish downloading
+		if (plugin::restartRequested) {
+			plugin::restartRequested = false;
+			if (osdialog_message(OSDIALOG_INFO, OSDIALOG_OK_CANCEL, "All plugins have been downloaded. Close and re-launch Rack to load new updates.")) {
+				APP->window->close();
+			}
+		}
+
 		MenuButton::step();
 	}
 };
@@ -713,6 +720,14 @@ struct HelpButton : MenuButton {
 		menu->box.pos = getAbsoluteOffset(math::Vec(0, box.size.y));
 		menu->box.size.x = box.size.x;
 
+		if (hasUpdate()) {
+			UrlItem *updateItem = new UrlItem;
+			updateItem->text = "Update " + APP_NAME;
+			updateItem->rightText = APP_VERSION + " → " + APP_VERSION_UPDATE;
+			updateItem->url = "https://vcvrack.com/";
+			menu->addChild(updateItem);
+		}
+
 		UrlItem *manualItem = new UrlItem;
 		manualItem->text = "Manual";
 		manualItem->rightText = "F1";
@@ -723,14 +738,6 @@ struct HelpButton : MenuButton {
 		websiteItem->text = "VCVRack.com";
 		websiteItem->url = "https://vcvrack.com/";
 		menu->addChild(websiteItem);
-
-		if (hasUpdate()) {
-			UrlItem *updateItem = new UrlItem;
-			updateItem->text = "Update " + APP_NAME;
-			updateItem->rightText = APP_VERSION + " → " + APP_VERSION_UPDATE;
-			updateItem->url = "https://vcvrack.com/";
-			menu->addChild(updateItem);
-		}
 
 		UserFolderItem *folderItem = new UserFolderItem;
 		folderItem->text = "Open user folder";
@@ -787,9 +794,9 @@ MenuBar *createMenuBar() {
 	engineButton->text = "Engine";
 	layout->addChild(engineButton);
 
-	PluginsButton *pluginsButton = new PluginsButton;
-	pluginsButton->text = "Plugins";
-	layout->addChild(pluginsButton);
+	LibraryButton *libraryButton = new LibraryButton;
+	libraryButton->text = "Library";
+	layout->addChild(libraryButton);
 
 	HelpButton *helpButton = new HelpButton;
 	helpButton->text = "Help";
