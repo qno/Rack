@@ -16,6 +16,7 @@ namespace plugin {
 
 struct Update {
 	std::string pluginSlug;
+	std::string pluginName;
 	std::string version;
 	std::string changelogUrl;
 	float progress = 0.f;
@@ -26,10 +27,12 @@ void init();
 void destroy();
 void logIn(const std::string &email, const std::string &password);
 void logOut();
+bool isLoggedIn();
 void queryUpdates();
+bool hasUpdates();
 void syncUpdate(Update *update);
 void syncUpdates();
-bool isLoggedIn();
+bool isSyncing();
 Plugin *getPlugin(const std::string &pluginSlug);
 Model *getModel(const std::string &pluginSlug, const std::string &modelSlug);
 std::string normalizeTag(const std::string &tag);
@@ -44,6 +47,8 @@ extern std::vector<Plugin*> plugins;
 
 extern std::string loginStatus;
 extern std::vector<Update> updates;
+extern std::string updateStatus;
+extern bool restartRequested;
 
 
 } // namespace plugin

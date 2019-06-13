@@ -63,7 +63,14 @@ struct Vector<float, 4> {
     return _mm_castsi128_ps(_mm_cmpeq_epi32(_mm_setzero_si128(), _mm_setzero_si128()));
 	}
 
-	/** Reads an array of 4 values. */
+	/** Constructs a vector from four values in reverse. */
+	static Vector setr(float x1, float x2, float x3, float x4) {
+		return Vector(_mm_setr_ps(x1, x2, x3, x4));
+	}
+
+	/** Reads an array of 4 values.
+	On little-endian machines (e.g. x86), the order is reversed, so `x[0]` corresponds to `vector.s[3]`.
+	*/
 	static Vector load(const float *x) {
 		/*
 		My benchmarks show that _mm_loadu_ps() performs equally as fast as _mm_load_ps() when data is actually aligned.
@@ -73,7 +80,9 @@ struct Vector<float, 4> {
 		return Vector(_mm_loadu_ps(x));
 	}
 
-	/** Writes an array of 4 values. */
+	/** Writes an array of 4 values.
+	On little-endian machines (e.g. x86), the order is reversed, so `x[0]` corresponds to `vector.s[3]`.
+	*/
 	void store(float *x) {
 		_mm_storeu_ps(x, v);
 	}
@@ -105,6 +114,9 @@ struct Vector<int32_t, 4> {
 	}
 	static Vector mask() {
 		return Vector(_mm_cmpeq_epi32(_mm_setzero_si128(), _mm_setzero_si128()));
+	}
+	static Vector setr(int32_t x1, int32_t x2, int32_t x3, int32_t x4) {
+		return Vector(_mm_setr_epi32(x1, x2, x3, x4));
 	}
 	static Vector load(const int32_t *x) {
 		// HACK
@@ -147,6 +159,20 @@ inline Vector<int32_t, 4> Vector<int32_t, 4>::cast(Vector<float, 4> a) {
 /** `~a & b` */
 inline Vector<float, 4> andnot(const Vector<float, 4> &a, const Vector<float, 4> &b) {
 	return Vector<float, 4>(_mm_andnot_ps(a.v, b.v));
+}
+
+/** Returns an integer with each bit corresponding to the most significant bit of each element.
+For example, `movemask(float_4::mask())` returns 0xf.
+*/
+inline int movemask(const Vector<float, 4> &a) {
+	return _mm_movemask_ps(a.v);
+}
+
+/** Returns an integer with each bit corresponding to the most significant bit of each byte.
+For example, `movemask(int32_4::mask())` returns 0xffff.
+*/
+inline int movemask(const Vector<int32_t, 4> &a) {
+	return _mm_movemask_epi8(a.v);
 }
 
 
