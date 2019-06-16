@@ -41,6 +41,7 @@ class VCVRackSDKConan(ConanFile):
         #self.requires.add("glfw/3.3@bincrafters/stable")
 
         #self.requires.add("Poco/1.9.0@pocoproject/stable")
+        self.requires.add("nasm_installer/2.13.02@bincrafters/stable")
 
     def build(self):
         if self.settings.os == "Windows":
