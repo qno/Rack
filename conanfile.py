@@ -51,6 +51,7 @@ class VCVRackSDKConan(ConanFile):
 
     def package(self):
         self.copy("*.*", dst="include", src="include")
+        self.copy("add_binary.cmake")
 
         if self.settings.os == "Windows":
             self.copy("*Rack*.lib", dst="lib", keep_path=False)
