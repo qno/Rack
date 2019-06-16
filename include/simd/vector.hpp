@@ -22,7 +22,7 @@ Usage example:
 	b *= sin(2 * M_PI * a);
 	b.store(out);
 */
-template <typename T, int N>
+template <typename TYPE, int SIZE>
 struct Vector;
 
 
@@ -30,6 +30,9 @@ struct Vector;
 */
 template <>
 struct Vector<float, 4> {
+	typedef float type;
+	constexpr static int size = 4;
+
 	union {
 		__m128 v;
 		/** Accessing this array of scalars is slow and defeats the purpose of vectorizing.
@@ -96,6 +99,9 @@ struct Vector<float, 4> {
 
 template <>
 struct Vector<int32_t, 4> {
+	typedef int32_t type;
+	constexpr static int size = 4;
+
 	union {
 		__m128i v;
 		int32_t s[4];
