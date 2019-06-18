@@ -37,7 +37,7 @@ jobs:
           sudo apt install -y $(linux-deps)
           pip3 install --user $(conan-pkg)
           pip3 install --user $(cpt-pkg) $(bpt-pkg)
-          conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
+          conan user
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
@@ -45,6 +45,7 @@ jobs:
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
+          conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
       - script: |
