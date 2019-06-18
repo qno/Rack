@@ -122,7 +122,7 @@ jobs:
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
-      - script:
+      - script: |
           pushd .
           mkdir build && cd build
           conan install .. -s build_type=Release --build=missing
@@ -145,7 +145,7 @@ jobs:
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
         displayName: setup dependencies
-      - script:
+      - script: |
           conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
