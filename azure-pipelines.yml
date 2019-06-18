@@ -144,15 +144,13 @@ jobs:
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
           conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-        displayName: build VCVRackSDK
+        displayName: setup dependencies
       - script:
-          export PATH="$HOME/.local/bin:$PATH"
           conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
       - script: |
-          export PATH="$HOME/.local/bin:$PATH"
           mkdir build
           cd build
           REM # conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 --build=missing
