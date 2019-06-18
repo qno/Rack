@@ -44,17 +44,17 @@ jobs:
         displayName: setup dependencies
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
+          conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
+          conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+        displayName: build VCVRackSDK
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
           pushd .
           mkdir build && cd build
           conan install .. -s compiler.libcxx=libstdc++11 -s build_type=Release --build=missing
           cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
           ninja -v
         displayName: build VCVRack
-      - script: |
-          export PATH="$PATH:$HOME/.local/bin"
-          conan create . vcvrack/$(vcvracksdk-version) --build=missing
-          conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
-        displayName: build VCVRackSDK
   - job: LinuxClang
     pool:
       vmImage: 'ubuntu-16.04'
