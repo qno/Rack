@@ -9,7 +9,9 @@
 - [Licenses](LICENSE.md)
 
 ***
-[![Build Status](https://dev.azure.com/qnohot/qnohot/_apis/build/status/qno.Rack?branchName=v1)](https://dev.azure.com/qnohot/qnohot/_build/latest?definitionId=11&branchName=v1)
+v1: [![Build Status](https://dev.azure.com/qnohot/qnohot/_apis/build/status/qno.Rack?branchName=v1)](https://dev.azure.com/qnohot/qnohot/_build/latest?definitionId=11&branchName=v1)
 
-[ ![Download](https://api.bintray.com/packages/qno/conan-public/VCVRackSDK%3Aqno/images/download.svg) ](https://bintray.com/qno/conan-public/VCVRackSDK%3Aqno/_latestVersion)
+feature/add_conan: [![Build Status](https://dev.azure.com/qnohot/qnohot/_apis/build/status/qno.Rack?branchName=feature/add_conan)](https://dev.azure.com/qnohot/qnohot/_build/latest?definitionId=11&branchName=feature/add_conan)
+
+[ ![Download](https://api.bintray.com/packages/qno/conan-public/VCVRackSDK%3Avcvrack/images/download.svg) ](https://bintray.com/qno/conan-public/VCVRackSDK%3Avcvrack/_latestVersion)
 ***
