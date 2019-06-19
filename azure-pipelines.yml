@@ -51,19 +51,19 @@ jobs:
         displayName: build VCVRackSDK
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OUIBlendishVCVRack/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
         displayName: upload conan packages from local cache
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
@@ -104,19 +104,19 @@ jobs:
         displayName: build VCVRackSDK
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
-          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OUIBlendishVCVRack/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
         displayName: upload conan packages from local cache
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
@@ -157,19 +157,19 @@ jobs:
         displayName: build VCVRackSDK
       - script: |
           export PATH="$HOME/.local/bin:$PATH"
-          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OUIBlendishVCVRack/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
         displayName: upload conan packages from local cache
       - script: |
           pushd .
@@ -197,22 +197,22 @@ jobs:
       - script: |
           conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_mingw_gcc8 --build=missing
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-          conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+          conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --force --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
       - script: |
-          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
-          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OUIBlendishVCVRack/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --confirm --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --confirm --all --remote $(vcvracksdk-conan-upload-remote)
         displayName: upload conan packages from local cache
       - script: |
           mkdir build
