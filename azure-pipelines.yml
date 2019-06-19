@@ -12,6 +12,7 @@ variables:
   vcvracksdk-conan-channel: "testing"
   vcvracksdk-conan-upload-remote: "qno"
   vcvrack-sdk-conan-upload-username: "qno"
+  vcvracksdk-conan-remote: "$(vcvracksdk-conan-upload-remote) https://api.bintray.com/conan/qno/conan-public --insert"
   vcvrack-sdk-conan-upload-apikey: "$(BINTRAY_API_KEY)" # set by azure job
 
   # Xcode Version overview: https://gist.github.com/yamaya/2924292
@@ -38,8 +39,8 @@ jobs:
           pip3 install --user $(conan-pkg)
           pip3 install --user $(cpt-pkg) $(bpt-pkg)
           conan user
+          conan remote add $(vcvracksdk-conan-remote)
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-          conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
         displayName: setup dependencies
       - script: |
@@ -48,6 +49,22 @@ jobs:
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+        displayName: upload conan packages from local cache
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           pushd .
@@ -73,8 +90,8 @@ jobs:
           pip3 install --user $(conan-pkg)
           pip3 install --user $(cpt-pkg) $(bpt-pkg)
           conan user
+          conan remote add $(vcvracksdk-conan-remote)
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-          conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
         displayName: setup dependencies
       - script: |
@@ -85,6 +102,22 @@ jobs:
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
+      - script: |
+          export PATH="$PATH:$HOME/.local/bin"
+          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+        displayName: upload conan packages from local cache
       - script: |
           export PATH="$PATH:$HOME/.local/bin"
           export CC=clang
@@ -112,8 +145,8 @@ jobs:
           pip install --upgrade $(conan-pkg)
           pip install $(cpt-pkg) $(bpt-pkg)
           conan user
+          conan remote add $(vcvracksdk-conan-remote)
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-          conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
         displayName: setup dependencies
       - script: |
@@ -122,6 +155,22 @@ jobs:
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
+      - script: |
+          export PATH="$HOME/.local/bin:$PATH"
+          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+        displayName: upload conan packages from local cache
       - script: |
           pushd .
           mkdir build && cd build
@@ -141,25 +190,34 @@ jobs:
           python -m pip install $(conan-pkg)
           python -m pip install $(cpt-pkg) $(bpt-pkg)
           conan user
+          conan remote add $(vcvracksdk-conan-remote)
           conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-          conan remote add qno https://api.bintray.com/conan/qno/conan-public
           conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
         displayName: setup dependencies
       - script: |
-          set CONAN_ENV_COMPILER_LIBCXX=libstdc++
-          REM #conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_mingw_gcc8 --build=missing
-          conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_mingw_gcc8 -s compiler.version=7 --build=missing
+          conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_mingw_gcc8 --build=missing
           conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
           conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
         displayName: build VCVRackSDK
       - script: |
+          conan upload OUIBlendishVCVRack/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OSDialog/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload NanoSVG/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload stb/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload SpeexDSP/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtAudio/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload RtMidi/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload Pffft/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload jansson/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libcurl/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload libzip/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload glfw/* --all --remote $(vcvracksdk-conan-upload-remote)
+          conan upload OpenSSL/* --all --remote $(vcvracksdk-conan-upload-remote)
+        displayName: upload conan packages from local cache
+      - script: |
           mkdir build
           cd build
-          REM # conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 --build=missing
-          REM # build in CI with gcc 7 and libc++ as conan MinGW doesn't build variants with libstdc++11 for now
-          REM # and no gcc 8 build are available, see also - https://github.com/conan-io/conan-package-tools/issues/375
-          set CONAN_ENV_COMPILER_LIBCXX=libstdc++
-          conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 -s compiler.version=7 --build=missing
+          conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 --build=missing
           call .\activate_run.bat
           REM # see https://stackoverflow.com/a/45104058 - MinGW sh.exe must NOT be in your path
           cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_SH=CMAKE_SH-NOTFOUND ..
@@ -178,8 +236,8 @@ jobs:
 #          python -m pip install $(conan-pkg)
 #          python -m pip install $(cpt-pkg) $(bpt-pkg)
 #          conan user
+#          conan remote add $(vcvracksdk-conan-remote)
 #          conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
-#          conan remote add qno https://api.bintray.com/conan/qno/conan-public
 #          conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 #          mkdir build
 #          cd build
