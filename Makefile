@@ -1,5 +1,6 @@
 RACK_DIR ?= .
-VERSION := 1.dev.$(shell git rev-parse --short HEAD)
+# VERSION := 1.dev.$(shell git rev-parse --short HEAD)
+VERSION := 1.0.0
 
 FLAGS += -DVERSION=$(VERSION)
 FLAGS += -Iinclude -Idep/include
@@ -125,8 +126,8 @@ ifdef ARCH_MAC
 	# Clean up and sign bundle
 	xattr -cr dist/$(TARGET).app
 	codesign --sign "Developer ID Application: Andrew Belt (VRF26934X5)" --verbose dist/$(TARGET).app
-	codesign --verify --verbose dist/$(TARGET).app
-	spctl --assess --verbose dist/$(TARGET).app
+	codesign --verify --deep --strict --verbose=2 dist/$(TARGET).app
+	spctl -a -t exec -vv dist/$(TARGET).app
 	# Make ZIP
 	cd dist && zip -q -9 -r Rack-$(VERSION)-$(ARCH).zip $(TARGET).app
 endif
