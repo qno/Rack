@@ -70,7 +70,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang)")
   set_target_properties(${RACK_APP} PROPERTIES COMPILE_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wsuggest-override")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
   target_compile_definitions(${RACK_APP} PRIVATE ARCH_MAC)
-  set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-export_dynamic -undefined dynamic_lookup")
 endif ()
 
 target_include_directories(${RACK_APP} PRIVATE include)
