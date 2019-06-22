@@ -60,19 +60,17 @@ class VCVRackSDKConan(ConanFile):
     def package_info(self):
 
         if self.settings.os == "Windows":
-            self.cpp_info.libs.append(self._lib_name)
-
-        if not self._isVisualStudioBuild():
-            self.cpp_info.cppflags.append("-march=nocona -funsafe-math-optimizations")
-
-        if self._isMinGWBuild():
             self.cpp_info.cppflags.append("-DARCH_WIN")
+            self.cpp_info.libs.append(self._lib_name)
 
         if self.settings.os == "Linux":
             self.cpp_info.cppflags.append("-DARCH_LIN")
 
         if self.settings.os == "Macos":
             self.cpp_info.cppflags.append("-DARCH_MAC")
+
+        if not self._isVisualStudioBuild():
+            self.cpp_info.cppflags.append("-march=nocona -funsafe-math-optimizations")
 
     def deploy(self):
         self.copy("Rack*", dst="dist/Rack", src="bin", keep_path=False)
