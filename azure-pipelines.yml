@@ -12,12 +12,12 @@ variables:
   vcvracksdk-conan-channel: "testing"
   vcvracksdk-conan-upload-remote: "qno"
   vcvrack-sdk-conan-upload-username: "qno"
-  vcvracksdk-conan-remote: "$(vcvracksdk-conan-upload-remote) https://api.bintray.com/conan/qno/conan-public --insert"
+  vcvracksdk-conan-remote: "$(vcvracksdk-conan-upload-remote) https://api.bintray.com/conan/qno/conan-public"
   vcvrack-sdk-conan-upload-apikey: "$(BINTRAY_API_KEY)" # set by azure job
 
   conan-add-remotes: |
     conan user
-    conan remote add $(vcvracksdk-conan-remote)
+    conan remote add $(vcvracksdk-conan-remote) --insert
     conan remote add conan-community https://api.bintray.com/conan/conan-community/conan
     conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
