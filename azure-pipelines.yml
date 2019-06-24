@@ -87,7 +87,7 @@ stages:
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
-            path: $(System.DefaultWorkingDirectory)/build/dist
+            path: $(System.DefaultWorkingDirectory)/build
             artifact: Rack-Linux
     - job: LinuxClang
       pool:
@@ -134,7 +134,7 @@ stages:
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
-            path: $(System.DefaultWorkingDirectory)/build/dist
+            path: $(System.DefaultWorkingDirectory)/build
             artifact: Rack-Linux-Clang
     - job: MacOS1014
       pool:
@@ -176,7 +176,7 @@ stages:
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
-            path: $(System.DefaultWorkingDirectory)/build/dist
+            path: $(System.DefaultWorkingDirectory)/build
             artifact: Rack-Mac
     - job: MinGW
       pool:
@@ -214,7 +214,7 @@ stages:
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
-            path: $(System.DefaultWorkingDirectory)/build/dist
+            path: $(System.DefaultWorkingDirectory)/build
             artifact: Rack-Win
 #    - job: VisualStudio
 #      pool:
