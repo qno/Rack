@@ -17,6 +17,7 @@
 #include <system.hpp>
 #include <string.hpp>
 #include <updater.hpp>
+#include <network.hpp>
 
 #include <osdialog.h>
 #include <thread>
@@ -30,22 +31,23 @@ using namespace rack;
 
 
 static void fatalSignalHandler(int sig) {
-	// Only catch one signal
-	static bool caught = false;
-	bool localCaught = caught;
-	caught = true;
-	if (localCaught)
-		exit(1);
+	// Ignore this signal to avoid recursion.
+	signal(sig, NULL);
+	// Ignore abort() since we call it below.
+	signal(SIGABRT, NULL);
 
 	FATAL("Fatal signal %d. Stack trace:\n%s", sig, system::getStackTrace().c_str());
 
-	osdialog_message(OSDIALOG_ERROR, OSDIALOG_OK, "Rack has crashed. See log.txt for details.");
+	// This might fail because we might not be in the main thread.
+	// But oh well, we're crashing anyway.
+	std::string text = app::APP_NAME + " has crashed. See " + asset::logPath + " for details.";
+	osdialog_message(OSDIALOG_ERROR, OSDIALOG_OK, text.c_str());
 
-	exit(1);
+	abort();
 }
 
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
 #if defined ARCH_WIN
 	// Windows global mutex to prevent multiple instances
 	// Handle will be closed by Windows when the process ends
@@ -55,6 +57,9 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 	(void) instanceMutex;
+
+	// Don't display "Assertion failed!" dialog message.
+	_set_error_mode(_OUT_TO_STDERR);
 #endif
 
 	std::string patchPath;
@@ -72,8 +77,8 @@ int main(int argc, char *argv[]) {
 			case 'h': {
 				settings::headless = true;
 			} break;
-			// Due to Mac app translocation and Apple adding a -psn... flag when launched, disable screenshots on Mac for now.
 #if !defined ARCH_MAC
+			// Due to Mac app translocation and Apple adding a -psn... flag when launched, disable screenshots on Mac for now.
 			case 'p': {
 				screenshot = true;
 				// If parsing number failed, use default value
@@ -93,12 +98,11 @@ int main(int argc, char *argv[]) {
 		patchPath = argv[optind];
 	}
 
+	// Initialize environment
 	asset::init();
 	logger::init();
 
 	// We can now install a signal handler and log the output
-	// Mac has its own decent crash handler
-#if defined ARCH_LIN
 	if (!settings::devMode) {
 		signal(SIGABRT, fatalSignalHandler);
 		signal(SIGFPE, fatalSignalHandler);
@@ -106,7 +110,6 @@ int main(int argc, char *argv[]) {
 		signal(SIGSEGV, fatalSignalHandler);
 		signal(SIGTERM, fatalSignalHandler);
 	}
-#endif
 
 	// Log environment
 	INFO("%s v%s", app::APP_NAME.c_str(), app::APP_VERSION.c_str());
@@ -126,7 +129,7 @@ int main(int argc, char *argv[]) {
 	try {
 		settings::load(asset::settingsPath);
 	}
-	catch (UserException &e) {
+	catch (UserException& e) {
 		std::string msg = e.what();
 		msg += "\n\nReset settings to default?";
 		if (!osdialog_message(OSDIALOG_WARNING, OSDIALOG_OK_CANCEL, msg.c_str())) {
@@ -144,6 +147,7 @@ int main(int argc, char *argv[]) {
 
 	INFO("Initializing environment");
 	random::init();
+	network::init();
 	midi::init();
 	rtmidiInit();
 	bridgeInit();
@@ -160,7 +164,7 @@ int main(int argc, char *argv[]) {
 	INFO("Initializing app");
 	appInit();
 
-	const char *openedFilename = glfwGetOpenedFilename();
+	const char* openedFilename = glfwGetOpenedFilename();
 	if (openedFilename) {
 		patchPath = openedFilename;
 	}
