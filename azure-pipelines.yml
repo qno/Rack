@@ -42,7 +42,7 @@ variables:
 
 stages:
 - stage: build
-  displayName: Build Plugin
+  displayName: Build Rack
   # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml
   jobs:
     # maybe also try CentOS and Arch builds?
