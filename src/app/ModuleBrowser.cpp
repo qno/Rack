@@ -134,7 +134,7 @@ struct BrowserOverlay : widget::OpaqueWidget {
 };
 
 
-static const float MODEL_BOX_ZOOM = 0.5f;
+static const float MODEL_BOX_ZOOM = 0.75f;
 
 
 struct ModelBox : widget::OpaqueWidget {
