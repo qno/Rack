@@ -51,6 +51,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
 endif ()
 
 if (MINGW)
+  target_compile_definitions(${RACK_APP} PRIVATE _WIN32_WINNT=0x0601)
   set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols -mwindows")
 endif ()
 
