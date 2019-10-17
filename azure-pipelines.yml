@@ -64,16 +64,16 @@ stages:
             pip3 install --user $(cpt-pkg) $(bpt-pkg)
             $(conan-add-remotes)
           displayName: setup dependencies
-        - script: |
-            export PATH="$PATH:$HOME/.local/bin"
-            conan create . vcvrack/$(vcvracksdk-conan-channel) -s compiler.libcxx=libstdc++11 --build=missing
-            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
-          displayName: build VCVRackSDK
-        - script: |
-            export PATH="$PATH:$HOME/.local/bin"
-            $(conan-upload-dependencies)
-          displayName: upload conan packages from local cache
+#        - script: |
+#            export PATH="$PATH:$HOME/.local/bin"
+#            conan create . vcvrack/$(vcvracksdk-conan-channel) -s compiler.libcxx=libstdc++11 --build=missing
+#            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
+#            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+#          displayName: build VCVRackSDK
+#        - script: |
+#            export PATH="$PATH:$HOME/.local/bin"
+#            $(conan-upload-dependencies)
+#          displayName: upload conan packages from local cache
         - script: |
             export PATH="$PATH:$HOME/.local/bin"
             pushd .
@@ -83,7 +83,7 @@ stages:
             ninja -v
             mkdir Rack
             cp -r bin/* Rack
-            7z a -tzip -mx=9 Rack-lin.zip Rack
+            7z a -tzip -mx=9 Rack-extra-lin.zip Rack
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
@@ -107,18 +107,18 @@ stages:
             pip3 install --user $(cpt-pkg) $(bpt-pkg)
             $(conan-add-remotes)
           displayName: setup dependencies
-        - script: |
-            export PATH="$PATH:$HOME/.local/bin"
-            export CC=clang
-            export CXX=clang++
-            conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_linux_clang8 --build=missing
-            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
-          displayName: build VCVRackSDK
-        - script: |
-            export PATH="$PATH:$HOME/.local/bin"
-            $(conan-upload-dependencies)
-          displayName: upload conan packages from local cache
+#        - script: |
+#            export PATH="$PATH:$HOME/.local/bin"
+#            export CC=clang
+#            export CXX=clang++
+#            conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_linux_clang8 --build=missing
+#            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
+#            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+#          displayName: build VCVRackSDK
+#        - script: |
+#            export PATH="$PATH:$HOME/.local/bin"
+#            $(conan-upload-dependencies)
+#          displayName: upload conan packages from local cache
         - script: |
             export PATH="$PATH:$HOME/.local/bin"
             export CC=clang
@@ -130,7 +130,7 @@ stages:
             ninja -v
             mkdir Rack
             cp -r bin/* Rack
-            7z a -tzip -mx=9 Rack-lin-clang.zip Rack
+            7z a -tzip -mx=9 Rack-extra-lin-clang.zip Rack
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
@@ -154,16 +154,16 @@ stages:
             pip install $(cpt-pkg) $(bpt-pkg)
             $(conan-add-remotes)
           displayName: setup dependencies
-        - script: |
-            export PATH="$HOME/.local/bin:$PATH"
-            conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
-            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
-          displayName: build VCVRackSDK
-        - script: |
-            export PATH="$HOME/.local/bin:$PATH"
-            $(conan-upload-dependencies)
-          displayName: upload conan packages from local cache
+#        - script: |
+#            export PATH="$HOME/.local/bin:$PATH"
+#            conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
+#            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
+#            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+#          displayName: build VCVRackSDK
+#        - script: |
+#            export PATH="$HOME/.local/bin:$PATH"
+#            $(conan-upload-dependencies)
+#          displayName: upload conan packages from local cache
         - script: |
             pushd .
             mkdir build && cd build
@@ -172,7 +172,7 @@ stages:
             VERBOSE=1 make -j
             mkdir Rack
             cp -r bin/* Rack
-            7z a -tzip -mx=9 Rack-mac.zip Rack
+            7z a -tzip -mx=9 Rack-extra-mac.zip Rack
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
@@ -191,14 +191,14 @@ stages:
             python -m pip install $(cpt-pkg) $(bpt-pkg)
             $(conan-add-remotes)
           displayName: setup dependencies
-        - script: |
-            conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_mingw_gcc8 --build=missing
-            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --force --all --remote=$(vcvracksdk-conan-upload-remote)
-          displayName: build VCVRackSDK
-        - script: |
-            $(conan-upload-dependencies)
-          displayName: upload conan packages from local cache
+#        - script: |
+#            conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_mingw_gcc8 --build=missing
+#            conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
+#            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --force --all --remote=$(vcvracksdk-conan-upload-remote)
+#          displayName: build VCVRackSDK
+#        - script: |
+#            $(conan-upload-dependencies)
+#          displayName: upload conan packages from local cache
         - script: |
             mkdir build
             cd build
@@ -210,7 +210,7 @@ stages:
             call .\deactivate_run.bat
             mkdir Rack
             xcopy bin Rack /E /Y
-            7z a -tzip -mx=9 Rack-win.zip Rack
+            7z a -tzip -mx=9 Rack-extra-win.zip Rack
           displayName: build VCVRack
         - task: PublishPipelineArtifact@1
           inputs:
