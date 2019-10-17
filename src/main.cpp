@@ -27,6 +27,12 @@
 	#include <windows.h> // for CreateMutex
 #endif
 
+#if defined ARCH_MAC
+	#define GLFW_EXPOSE_NATIVE_COCOA
+	#include <GLFW/glfw3native.h> // for glfwGetOpenedFilenames()
+#endif
+
+
 using namespace rack;
 
 
@@ -69,7 +75,7 @@ int main(int argc, char* argv[]) {
 	// Parse command line arguments
 	int c;
 	opterr = 0;
-	while ((c = getopt(argc, argv, "dhp:s:u:")) != -1) {
+	while ((c = getopt(argc, argv, "dht:s:u:")) != -1) {
 		switch (c) {
 			case 'd': {
 				settings::devMode = true;
@@ -77,7 +83,6 @@ int main(int argc, char* argv[]) {
 			case 'h': {
 				settings::headless = true;
 			} break;
-			// Due to Mac app translocation and Apple adding a -psn... flag when launched, disable screenshots on Mac for now.
 			case 't': {
 				screenshot = true;
 				// If parsing number failed, use default value
@@ -122,6 +127,9 @@ int main(int argc, char* argv[]) {
 		INFO("Development mode");
 	INFO("System directory: %s", asset::systemDir.c_str());
 	INFO("User directory: %s", asset::userDir.c_str());
+#if defined ARCH_MAC
+	INFO("Bundle path: %s", asset::bundlePath.c_str());
+#endif
 
 	// Load settings
 	try {
@@ -162,10 +170,16 @@ int main(int argc, char* argv[]) {
 	INFO("Initializing app");
 	appInit();
 
-	const char* openedFilename = glfwGetOpenedFilename();
-	if (openedFilename) {
-		patchPath = openedFilename;
+	// On Mac, use a hacked-in GLFW addition to get the launched path.
+#if defined ARCH_MAC
+	// For some reason, launching from the command line sets glfwGetOpenedFilenames(), so make sure we're running the app bundle.
+	if (asset::bundlePath != "") {
+		const char* const* openedFilenames = glfwGetOpenedFilenames();
+		if (openedFilenames && openedFilenames[0]) {
+			patchPath = openedFilenames[0];
+		}
 	}
+#endif
 
 	if (!settings::headless) {
 		APP->patch->init(patchPath);

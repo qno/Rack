@@ -1,0 +1,88 @@
+cmake_minimum_required(VERSION 3.7)
+
+# https://cmake.org/cmake/help/latest/variable/CMAKE_OSX_DEPLOYMENT_TARGET.html
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.9" CACHE STRING "Minimum OS X deployment version")
+
+project(VCVRack CXX)
+
+set(CMAKE_CXX_STANDARD 14)
+
+set(RACK_APP Rack)
+
+set(RACK_GIT_REV "UNKNOWN")
+
+find_package(Git)
+if (GIT_FOUND)
+  execute_process(
+    COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+    WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}"
+    OUTPUT_VARIABLE RACK_GIT_REV
+    ERROR_QUIET
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+else ()
+  message(WARNING "Git cmd not found")
+endif ()
+
+set(RACK_BUILD_VERSION "1.dev.${RACK_GIT_REV}")
+message(STATUS "build ${RACK_APP} version '${RACK_BUILD_VERSION}'")
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
+file(GLOB_RECURSE SOURCES src/*.cpp src/*.c)
+file(GLOB_RECURSE HEADERS include/*.hpp include/*.h)
+
+source_group("Header Files" FILES ${HEADERS})
+
+if (MINGW)
+  set(SOURCES "${SOURCES}" Rack.rc)
+endif ()
+
+add_executable(${RACK_APP} ${SOURCES})
+
+target_compile_definitions(${RACK_APP} PRIVATE VERSION=${RACK_BUILD_VERSION})
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+  # http://cmake.3232098.n2.nabble.com/Link-against-exe-on-Windows-fails-a-file-not-found-td7597550.html
+  set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+  set_target_properties(${RACK_APP} PROPERTIES ENABLE_EXPORTS ON)
+  target_compile_definitions(${RACK_APP} PRIVATE _USE_MATH_DEFINES ARCH_WIN _WIN32_WINNT=0x0601)
+endif ()
+
+if (MINGW)
+  set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-Wl,--export-all-symbols -mwindows")
+endif ()
+
+if (MSVC)
+  # https://docs.microsoft.com/en-us/cpp/build/reference/compiler-options-listed-by-category?view=vs-2019
+  # /O2 /arch:AVX2 --> https://docs.microsoft.com/de-de/cpp/build/reference/arch-x64?view=vs-2019
+  target_compile_definitions(${RACK_APP} PRIVATE _CRT_SECURE_NO_WARNINGS)
+else ()
+  set_target_properties(${RACK_APP} PROPERTIES COMPILE_FLAGS "-march=nocona -funsafe-math-optimizations")
+endif ()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "^(GNU|Clang)")
+  if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    target_compile_definitions(${RACK_APP} PRIVATE ARCH_LIN)
+    set_target_properties(${RACK_APP} PROPERTIES LINK_FLAGS "-rdynamic")
+  endif ()
+  set_target_properties(${RACK_APP} PROPERTIES COMPILE_FLAGS "-Wall -Wextra -Wno-unused-parameter -Wsuggest-override")
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+  target_compile_definitions(${RACK_APP} PRIVATE ARCH_MAC)
+endif ()
+
+target_include_directories(${RACK_APP} PRIVATE include)
+conan_target_link_libraries(${RACK_APP})
+
+if (MINGW)
+  target_link_libraries(${RACK_APP} "shlwapi" "imagehlp")
+endif ()
+
+file(INSTALL Core.json template.vcv res DESTINATION bin)
+if (MINGW)
+  get_filename_component(MINGW_PATH ${CMAKE_CXX_COMPILER} DIRECTORY)
+  message(STATUS "detected MinGW PATH '${MINGW_PATH}'")
+  file(GLOB MINGW_DLLS ${MINGW_PATH}/libgcc* ${MINGW_PATH}/libstdc++* ${MINGW_PATH}/libwinpthread*)
+  file(INSTALL ${MINGW_DLLS} DESTINATION bin)
+endif ()
