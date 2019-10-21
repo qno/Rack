@@ -29,9 +29,9 @@ class VCVRackSDKConan(ConanFile):
         self.requires.add("RtMidi/4.0.0@qno/testing")
         self.requires.add("Pffft/latest@qno/testing")
 
-        self.requires.add("jansson/2.12@bincrafters/stable")
+        self.requires.add("jansson/2.12")
         self.requires.add("libcurl/7.64.1@bincrafters/stable")
-        self.requires.add("libzip/1.5.1@bincrafters/stable")
+        self.requires.add("libzip/1.5.2@bincrafters/stable")
 
         # override official glfw with VCVRack glfw version
         self.requires.add("glfw/3.3@qno/testing")
@@ -41,7 +41,7 @@ class VCVRackSDKConan(ConanFile):
         self.requires.add("nasm_installer/2.13.02@bincrafters/stable")
 
         # OpenSSL override
-        self.requires.add("OpenSSL/1.0.2r@conan/stable")
+        self.requires.add("OpenSSL/1.1.1c@conan/stable")
 
     def build(self):
         if self.settings.os == "Windows":

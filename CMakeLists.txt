@@ -76,7 +76,7 @@ target_include_directories(${RACK_APP} PRIVATE include)
 conan_target_link_libraries(${RACK_APP})
 
 if (MINGW)
-  target_link_libraries(${RACK_APP} "shlwapi" "imagehlp")
+  target_link_libraries(${RACK_APP} "shlwapi" "imagehlp" "bcrypt")
 endif ()
 
 file(INSTALL Core.json template.vcv res DESTINATION bin)
