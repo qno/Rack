@@ -202,7 +202,7 @@ void init(Plugin* p) {
 
    print(f"Created template plugin in {plugin_dir}")
    os.system(f"cd {plugin_dir} && git init")
-   print(f"You may use `make`, `make clean`, `make dist`, `make install`, etc in the {plugin_dir} directory.")
+   print(f"You can develop your plugin in the {plugin_dir} directory. You can build your plugin with CMake.")
 
 
 def create_manifest(slug, plugin_dir="."):
