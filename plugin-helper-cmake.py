@@ -202,7 +202,9 @@ void init(Plugin* p) {
 
    print(f"Created template plugin in {plugin_dir}")
    os.system(f"cd {plugin_dir} && git init")
-   print(f"You can develop your plugin in the {plugin_dir} directory. You can build your plugin with CMake.")
+   print(f"You can develop your plugin in the {plugin_dir} directory.")
+   print(f"Initialize building your plugin by creating a build folder and call 'conan install  path_to{os.sep}{plugin_dir}' from within this folder.")
+   print(f"You can then build your plugin with CMake.")
 
 
 def create_manifest(slug, plugin_dir="."):
