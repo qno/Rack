@@ -114,7 +114,7 @@ source_group("Header Files" FILES ${{HEADERS}})
 # uncomment the following code and adapt it according to your needs
 # If you don't need this, remove the commented code.
 #include(add_binary)
-# for each binary file create do a add_binary
+# for each binary file do create a add_binary
 #add_binary(src/YourBinary.bin YOUR_BINARY_ASM)
 
 # and add the generated assembler file(s) like this to the add_library command
@@ -139,7 +139,7 @@ install(DIRECTORY ${{PROJECT_BINARY_DIR}}/dist/${{PLUGIN_NAME}}/ DESTINATION ${{
    with open(os.path.join(plugin_dir, "CMakeLists.txt"), "w") as f:
       f.write(cmakelistsfile)
 
-   # Create conanfile.txt
+# Create conanfile.txt
    conanfile = """[requires]
 VCVRackSDK/latest@vcvrack/testing
 
@@ -155,16 +155,17 @@ virtualrunenv
       f.write(conanfile)
 
    # Create plugin.hpp
-   plugin_hpp = """#include <rack.hpp>
+   plugin_hpp = """#pragma once
+#include <rack.hpp>
 
 
 using namespace rack;
 
 // Declare the Plugin, defined in plugin.cpp
-extern Plugin *pluginInstance;
+extern Plugin* pluginInstance;
 
 // Declare each Model, defined in each module source file
-// extern Model *modelMyModule;
+// extern Model* modelMyModule;
 """
    with open(os.path.join(plugin_dir, "src/plugin.hpp"), "w") as f:
       f.write(plugin_hpp)
@@ -173,10 +174,10 @@ extern Plugin *pluginInstance;
    plugin_cpp = """#include "plugin.hpp"
 
 
-Plugin *pluginInstance;
+Plugin* pluginInstance;
 
 
-void init(Plugin *p) {
+void init(Plugin* p) {
    pluginInstance = p;
 
    // Add modules here
@@ -201,6 +202,7 @@ void init(Plugin *p) {
 
    print(f"Created template plugin in {plugin_dir}")
    os.system(f"cd {plugin_dir} && git init")
+   print(f"You may use `make`, `make clean`, `make dist`, `make install`, etc in the {plugin_dir} directory.")
 
 
 def create_manifest(slug, plugin_dir="."):
@@ -229,6 +231,7 @@ def create_manifest(slug, plugin_dir="."):
    manifest['manualUrl'] = input_default("Manual website URL (optional)", manifest.get('manualUrl', ""))
    manifest['sourceUrl'] = input_default("Source code URL (optional)", manifest.get('sourceUrl', ""))
    manifest['donateUrl'] = input_default("Donate URL (optional)", manifest.get('donateUrl', ""))
+   manifest['changelogUrl'] = manifest.get('changelogUrl', "")
 
    if 'modules' not in manifest:
       manifest['modules'] = []
@@ -260,7 +263,7 @@ def create_module(slug, panel_filename=None, source_filename=None):
       module_manifest['slug'] = slug
       module_manifest['name'] = input_default("Module name", slug)
       module_manifest['description'] = input_default("One-line description (optional)")
-      tags = input_default("Tags (comma-separated, case-insensitive, see https://github.com/VCVRack/Rack/blob/v1/src/plugin.cpp#L511-L571 for list)")
+      tags = input_default("Tags (comma-separated, case-insensitive, see https://github.com/VCVRack/Rack/blob/v1/src/tag.cpp for list)")
       tags = tags.split(",")
       tags = [tag.strip() for tag in tags]
       if len(tags) == 1 and tags[0] == "":
@@ -305,7 +308,7 @@ def create_module(slug, panel_filename=None, source_filename=None):
       # Tell user to add model to plugin.hpp and plugin.cpp
       print(f"""
 To enable the module, add
-extern Model *model{identifier};
+extern Model* model{identifier};
 to plugin.hpp, and add
 p->addModel(model{identifier});
 to the init() function in plugin.cpp.""")
@@ -320,6 +323,7 @@ def panel_to_components(tree):
    # Get components layer
    root = tree.getroot()
    groups = root.findall(".//svg:g[@inkscape:label='components']", ns)
+   # Illustrator uses `id` for the group name.
    if len(groups) < 1:
       groups = root.findall(".//svg:g[@id='components']", ns)
    if len(groups) < 1:
@@ -455,7 +459,7 @@ struct {identifier} : Module {{"""
    source += """
    }
 
-   void process(const ProcessArgs &args) override {
+   void process(const ProcessArgs& args) override {
    }
 };"""
 
@@ -463,7 +467,7 @@ struct {identifier} : Module {{"""
 
 
 struct {identifier}Widget : ModuleWidget {{
-   {identifier}Widget({identifier} *module) {{
+   {identifier}Widget({identifier}* module) {{
       setModule(module);
       setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/{slug}.svg")));
 
@@ -534,7 +538,7 @@ struct {identifier}Widget : ModuleWidget {{
 }};
 
 
-Model *model{identifier} = createModel<{identifier}, {identifier}Widget>("{slug}");"""
+Model* model{identifier} = createModel<{identifier}, {identifier}Widget>("{slug}");"""
 
    return source
 
