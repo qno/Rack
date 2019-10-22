@@ -9,6 +9,7 @@
 #include <settings.hpp>
 #include <plugin.hpp> // used in Window::screenshot
 #include <system.hpp> // used in Window::screenshot
+#include <engine/Engine.hpp>
 
 #include <map>
 #include <queue>
@@ -100,6 +101,14 @@ struct Window::Internal {
 	float lastFrameRate = 0.f;
 };
 
+static void windowFocusCallback(GLFWwindow* win, int focused) {
+	Window* window = (Window*) glfwGetWindowUserPointer(win);
+	window->focused = focused == GLFW_TRUE;
+
+	if (settings::pauseUnfocused) {
+		APP->engine->setPaused(!window->focused);
+	}
+}
 
 static void windowSizeCallback(GLFWwindow* win, int width, int height) {
 	// Do nothing. Window size is reset each frame anyway.
@@ -256,6 +265,7 @@ Window::Window() {
 	internal->monitorRefreshRate = monitorMode->refreshRate;
 
 	// Set window callbacks
+	glfwSetWindowFocusCallback(win, windowFocusCallback);
 	glfwSetWindowSizeCallback(win, windowSizeCallback);
 	glfwSetMouseButtonCallback(win, mouseButtonCallback);
 	// Call this ourselves, but on every frame instead of only when the mouse moves

@@ -53,6 +53,8 @@ static float modelScore(plugin::Model* model, const std::string& search) {
 			s += alias;
 		}
 	}
+	s += " ";
+	s += model->description;
 	float score = string::fuzzyScore(string::lowercase(s), string::lowercase(search));
 	return score;
 }
@@ -132,7 +134,7 @@ struct BrowserOverlay : widget::OpaqueWidget {
 };
 
 
-static const float MODEL_BOX_ZOOM = 0.5f;
+static const float MODEL_BOX_ZOOM = 0.75f;
 
 
 struct ModelBox : widget::OpaqueWidget {
@@ -190,7 +192,7 @@ struct ModelBox : widget::OpaqueWidget {
 	}
 
 	void step() override {
-		if (previewFb && ++visibleFrames >= 60) {
+		if (!settings::keepPreviews && previewFb && ++visibleFrames >= 60) {
 			deletePreview();
 		}
 		OpaqueWidget::step();

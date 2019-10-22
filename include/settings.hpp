@@ -29,6 +29,7 @@ extern float cableOpacity;
 extern float cableTension;
 extern bool allowCursorLock;
 extern bool realTime;
+extern bool keepPreviews;
 extern float sampleRate;
 extern int threadCount;
 extern bool paramTooltip;
@@ -37,6 +38,7 @@ extern bool lockModules;
 extern int frameSwapInterval;
 extern float autosavePeriod;
 extern bool skipLoadOnLaunch;
+extern bool pauseUnfocused;
 extern std::string patchPath;
 extern std::vector<NVGcolor> cableColors;
 
