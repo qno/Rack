@@ -31,7 +31,7 @@ class VCVRackSDKConan(ConanFile):
 
         self.requires.add("jansson/2.12")
         self.requires.add("libcurl/7.64.1@bincrafters/stable")
-        self.requires.add("libzip/1.5.2@bincrafters/stable")
+        self.requires.add("libzip/1.5.1@bincrafters/stable")
 
         # override official glfw with VCVRack glfw version
         self.requires.add("glfw/3.3@qno/testing")
