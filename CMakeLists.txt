@@ -47,7 +47,7 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   # http://cmake.3232098.n2.nabble.com/Link-against-exe-on-Windows-fails-a-file-not-found-td7597550.html
   set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
   set_target_properties(${RACK_APP} PROPERTIES ENABLE_EXPORTS ON)
-  target_compile_definitions(${RACK_APP} PRIVATE _USE_MATH_DEFINES ARCH_WIN _WIN32_WINNT=0x0601)
+  target_compile_definitions(${RACK_APP} PRIVATE _USE_MATH_DEFINES ARCH_WIN _WIN32_WINNT=_WIN32_WINNT_VISTA)
 endif ()
 
 if (MINGW)
