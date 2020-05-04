@@ -50,7 +50,7 @@ stages:
       pool:
         vmImage: ubuntu-latest
       container:
-        image: ubuntu:disco
+        image: ubuntu
         options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
       steps:
         - script: |
@@ -93,7 +93,7 @@ stages:
       pool:
         vmImage: ubuntu-latest
       container:
-        image: ubuntu:disco
+        image: ubuntu
         options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
       steps:
         - script: |
