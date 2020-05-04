@@ -21,7 +21,7 @@
 #endif
 
 #if defined ARCH_WIN
-	#define _WIN32_WINNT _WIN32_WINNT_VISTA // for QueryThreadCycleTime
+	//#define _WIN32_WINNT _WIN32_WINNT_VISTA // for QueryThreadCycleTime
 	#include <windows.h>
 	#include <shellapi.h>
 	#include <processthreadsapi.h>
