@@ -203,11 +203,11 @@ stages:
             mkdir build
             cd build
             conan install .. -s build_type=Release --profile ../.ci/conan_profile_mingw_gcc8 --build=missing
-            call .\activate_run.bat
+            call .\activate_build.bat
             REM # see https://stackoverflow.com/a/45104058 - MinGW sh.exe must NOT be in your path
             cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Release -DCMAKE_SH=CMAKE_SH-NOTFOUND ..
             cmake --build .
-            call .\deactivate_run.bat
+            call .\deactivate_build.bat
             mkdir Rack
             xcopy bin Rack /E /Y
             7z a -tzip -mx=9 Rack-win.zip Rack
