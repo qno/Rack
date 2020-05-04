@@ -3,10 +3,9 @@ trigger:
 - master
 
 variables:
-  fix-docker-tzdata: sudo ln -snf /usr/share/zoneinfo/Europe/Berlin /etc/localtime && sudo echo "Europe/Berlin" > /etc/timezone
   python-version: "3.7"
   conan-packages: "conan conan_package_tools bincrafters_package_tools"
-  linux-deps: "python3-setuptools python3-pip build-essential automake autoconf libtool cmake gcc g++ clang ninja-build git p7zip-full libx11-dev"
+  linux-deps: "python3-setuptools python3-pip build-essential automake autoconf libtool cmake gcc g++ clang ninja-build git p7zip-full"
   vcvracksdk-version: "latest"
   vcvracksdk-conan-channel: "testing"
   vcvracksdk-conan-upload-remote: "qno"
@@ -44,20 +43,11 @@ stages:
   displayName: Build Rack
   # https://docs.microsoft.com/en-us/azure/devops/pipelines/process/container-phases?view=azure-devops&tabs=yaml
   jobs:
-    # maybe also try CentOS and Arch builds?
     - job: LinuxGCC
       pool:
         vmImage: ubuntu-latest
-      container:
-        image: ubuntu
-        options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
       steps:
         - script: |
-            /tmp/docker exec -t -u 0 ci-container \
-            sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-          displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
-        - script: |
-            $(fix-docker-tzdata)
             export PATH="$PATH:$HOME/.local/bin"
             sudo apt install -y $(linux-deps)
             pip3 install --user $(conan-packages)
@@ -91,16 +81,8 @@ stages:
     - job: LinuxClang
       pool:
         vmImage: ubuntu-latest
-      container:
-        image: ubuntu
-        options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
       steps:
         - script: |
-            /tmp/docker exec -t -u 0 ci-container \
-            sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-          displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
-        - script: |
-            $(fix-docker-tzdata)
             export PATH="$PATH:$HOME/.local/bin"
             sudo apt install -y $(linux-deps)
             pip3 install --user $(conan-packages)
