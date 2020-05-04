@@ -57,7 +57,7 @@ stages:
             export PATH="$PATH:$HOME/.local/bin"
             conan create . vcvrack/$(vcvracksdk-conan-channel) -s compiler.libcxx=libstdc++11 --build=missing
             conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --force --remote=$(vcvracksdk-conan-upload-remote)
           displayName: build VCVRackSDK
         - script: |
             export PATH="$PATH:$HOME/.local/bin"
@@ -94,7 +94,7 @@ stages:
             export CXX=clang++
             conan create . vcvrack/$(vcvracksdk-conan-channel) --build=missing
             conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
-            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
+            conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --force --remote=$(vcvracksdk-conan-upload-remote)
           displayName: build VCVRackSDK
         - script: |
             export PATH="$PATH:$HOME/.local/bin"
