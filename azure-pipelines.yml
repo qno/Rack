@@ -48,7 +48,7 @@ stages:
     # maybe also try CentOS and Arch builds?
     - job: LinuxGCC
       pool:
-        vmImage: 'ubuntu-16.04'
+        vmImage: ubuntu-latest
       container:
         image: ubuntu:disco
         options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
@@ -91,7 +91,7 @@ stages:
             artifact: Rack-Linux
     - job: LinuxClang
       pool:
-        vmImage: 'ubuntu-16.04'
+        vmImage: ubuntu-latest
       container:
         image: ubuntu:disco
         options: "--name ci-container -v /usr/bin/docker:/tmp/docker:ro"
@@ -138,7 +138,7 @@ stages:
             artifact: Rack-Linux-Clang
     - job: MacOS1014
       pool:
-        vmImage: macOS-10.14
+        vmImage: macOS-latest
       steps:
         - task: UsePythonVersion@0
           inputs:
@@ -180,7 +180,7 @@ stages:
             artifact: Rack-Mac
     - job: MinGW
       pool:
-        vmImage: vs2017-win2016
+        vmImage: windows-latest
       steps:
         - task: UsePythonVersion@0
           inputs:
@@ -240,7 +240,7 @@ stages:
   jobs:
     - job: PublishArtifacts
       pool:
-        vmImage: 'ubuntu-16.04'
+        vmImage: ubuntu-latest
       steps:
         - task: DownloadPipelineArtifact@2
           inputs:
