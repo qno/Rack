@@ -55,11 +55,11 @@ stages:
       steps:
         - script: |
             /tmp/docker exec -t -u 0 ci-container \
-            sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+            sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y --no-upgrade install sudo"
           displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
         - script: |
             export PATH="$PATH:$HOME/.local/bin"
-            sudo apt install -y $(linux-deps)
+            sudo apt install -y --no-upgrade $(linux-deps)
             pip3 install --user $(conan-pkg)
             pip3 install --user $(cpt-pkg) $(bpt-pkg)
             $(conan-add-remotes)
@@ -98,11 +98,11 @@ stages:
       steps:
         - script: |
             /tmp/docker exec -t -u 0 ci-container \
-            sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+            sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y --no-upgrade install sudo"
           displayName: add sudo to container #https://github.com/Microsoft/azure-pipelines-agent/issues/2043
         - script: |
             export PATH="$PATH:$HOME/.local/bin"
-            sudo apt install -y $(linux-deps)
+            sudo apt install -y --no-upgrade $(linux-deps)
             pip3 install --user $(conan-pkg)
             pip3 install --user $(cpt-pkg) $(bpt-pkg)
             $(conan-add-remotes)
@@ -111,7 +111,7 @@ stages:
             export PATH="$PATH:$HOME/.local/bin"
             export CC=clang
             export CXX=clang++
-            conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_linux_clang8 --build=missing
+            conan create . vcvrack/$(vcvracksdk-conan-channel) --profile .ci/conan_profile_linux_clang10 --build=missing
             conan user -p $(vcvrack-sdk-conan-upload-apikey) --remote $(vcvracksdk-conan-upload-remote) $(vcvrack-sdk-conan-upload-username)
             conan upload VCVRackSDK/$(vcvracksdk-version)@vcvrack/$(vcvracksdk-conan-channel) --all --remote=$(vcvracksdk-conan-upload-remote)
           displayName: build VCVRackSDK
@@ -125,7 +125,7 @@ stages:
             export CXX=clang++
             pushd .
             mkdir build && cd build
-            conan install .. -s build_type=Release --profile ../.ci/conan_profile_linux_clang8 --build=missing
+            conan install .. -s build_type=Release --profile ../.ci/conan_profile_linux_clang10 --build=missing
             cmake -DCMAKE_BUILD_TYPE=Release -G Ninja ..
             ninja -v
             mkdir Rack
@@ -136,7 +136,7 @@ stages:
           inputs:
             path: $(System.DefaultWorkingDirectory)/build
             artifact: Rack-Linux-Clang
-    - job: MacOS1014
+    - job: MacOS
       pool:
         vmImage: macOS-latest
       steps:
